@@ -54,6 +54,19 @@ while (1) {
         next;
     }
 
+    # Handle shell builtins that can't be executed via system()
+    if ($cmd eq 'cd') {
+        handle_cd(@args);
+        next;
+    }
+
+    if ($cmd eq 'pwd') {
+        use Cwd;
+        print getcwd() . "\n";
+        $player->add_xp(1);
+        next;
+    }
+
     # Handle combat commands
     if ($cmd eq 'rm' && @args && is_enemy_file($args[0])) {
         Combat::handle_combat($player, $args[0]);
@@ -186,6 +199,23 @@ sub is_enemy_file {
     return 1 if $path =~ /\.elf$/;
     return 1 if $path =~ /daemon/;
     return 0;
+}
+
+sub handle_cd {
+    my ($dir) = @_;
+
+    # Default to home if no argument
+    $dir = $ENV{HOME} || '/home' unless defined $dir && $dir ne '';
+
+    # Attempt to change directory
+    if (chdir $dir) {
+        # Success - directory changed
+        return 1;
+    } else {
+        # Failed
+        print "cd: $dir: No such file or directory\n";
+        return 0;
+    }
 }
 
 sub execute_command {
