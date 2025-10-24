@@ -41,10 +41,10 @@ func New() *Server {
 
 // NewWithDockerClient creates a new Server with a custom Docker client (for testing)
 func NewWithDockerClient(dockerClient docker.Client) *Server {
-	// Get default image from environment or use alpine
+	// Get default image from environment or use game image
 	defaultImage := os.Getenv("SHELLCRAFT_IMAGE")
 	if defaultImage == "" {
-		defaultImage = "alpine:latest"
+		defaultImage = "shellcraft/game:latest"
 	}
 
 	s := &Server{
