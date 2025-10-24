@@ -76,8 +76,13 @@ func (d *DockerClient) CreateContainer(ctx context.Context, imageName string, co
 	// Use provided config or create default
 	if config == nil {
 		config = &container.Config{
-			Image: imageName,
-			Tty:   true,
+			Image:        imageName,
+			Tty:          true,
+			OpenStdin:    true,
+			StdinOnce:    false,
+			AttachStdin:  true,
+			AttachStdout: true,
+			AttachStderr: true,
 		}
 	} else if config.Image == "" {
 		config.Image = imageName
