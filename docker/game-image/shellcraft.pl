@@ -16,8 +16,9 @@ use Combat;
 # Initialize player or load save
 my $player = Player->load_or_create('/home/spellbook.dat');
 
-# Print welcome message
-print_welcome($player);
+# Print welcome message AFTER we know someone is connected
+# (first read will block until WebSocket connects)
+my $first_line = 1;
 
 # Main game loop
 while (1) {
@@ -28,6 +29,18 @@ while (1) {
     my $input = <STDIN>;
     last unless defined $input;  # EOF (Ctrl+D)
     chomp $input;
+
+    # Show welcome on first input
+    if ($first_line) {
+        $first_line = 0;
+        # Move cursor up to overwrite the empty prompt
+        print "\r\033[K";  # Clear current line
+        print_welcome($player);
+        # Re-print prompt
+        print_prompt($player);
+        # If they typed something, process it
+        next if $input =~ /^\s*$/;
+    }
 
     # Skip empty lines
     next if $input =~ /^\s*$/;
