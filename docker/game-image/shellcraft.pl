@@ -3,6 +3,11 @@ use strict;
 use warnings;
 use lib '/usr/local/lib/shellcraft';
 
+# Disable output buffering for immediate display
+$| = 1;
+STDOUT->autoflush(1);
+STDERR->autoflush(1);
+
 # Load game modules
 use Player;
 use Commands;
