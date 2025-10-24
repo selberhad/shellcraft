@@ -66,7 +66,7 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		"\r\n" +
 		"\r\n" +
 		"=== ShellCraft v0.1 ===\r\n" +
-		"Initializing your adventure...\r\n" +
+		"Press Enter to begin your adventure!\r\n" +
 		"\r\n"
 
 	ws.WriteMessage(websocket.TextMessage, []byte(welcomeScreen))
