@@ -122,7 +122,7 @@ func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
 	// Create session
 	sessionID := s.sessionManager.NewSession()
 
-	// Create and start container
+	// Create container (but don't start yet - wait for WebSocket connection)
 	containerID, err := s.dockerClient.CreateContainer(ctx, imageName, nil)
 	if err != nil {
 		http.Error(w, "Failed to create container", http.StatusInternalServerError)
@@ -130,11 +130,8 @@ func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.dockerClient.StartContainer(ctx, containerID); err != nil {
-		http.Error(w, "Failed to start container", http.StatusInternalServerError)
-		log.Printf("Failed to start container: %v", err)
-		return
-	}
+	// Note: Container is created but NOT started
+	// It will be started when the WebSocket connects in handleWebSocket()
 
 	// Attach container to session
 	if err := s.sessionManager.AttachContainer(sessionID, containerID); err != nil {

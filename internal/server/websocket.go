@@ -47,6 +47,16 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
 
+	// Start the container now (it was created but not started)
+	if err := s.dockerClient.StartContainer(ctx, sess.ContainerID); err != nil {
+		log.Printf("Failed to start container: %v", err)
+		ws.WriteMessage(websocket.TextMessage, []byte("Failed to start container\r\n"))
+		return
+	}
+
+	// Small delay to let container initialize
+	time.Sleep(100 * time.Millisecond)
+
 	// Attach to container
 	attach, err := s.dockerClient.AttachContainer(ctx, sess.ContainerID)
 	if err != nil {
