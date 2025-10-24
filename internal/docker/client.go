@@ -59,14 +59,19 @@ func (d *DockerClient) ListImages(ctx context.Context) ([]string, error) {
 
 // CreateContainer creates a new container from an image with resource limits
 func (d *DockerClient) CreateContainer(ctx context.Context, imageName string, config *container.Config) (string, error) {
-	// Pull image if not present
-	reader, err := d.cli.ImagePull(ctx, imageName, image.PullOptions{})
+	// Check if image exists locally first
+	_, _, err := d.cli.ImageInspectWithRaw(ctx, imageName)
 	if err != nil {
-		return "", err
+		// Image doesn't exist locally, try to pull it
+		reader, pullErr := d.cli.ImagePull(ctx, imageName, image.PullOptions{})
+		if pullErr != nil {
+			return "", pullErr
+		}
+		defer reader.Close()
+		// Consume the pull output
+		io.Copy(io.Discard, reader)
 	}
-	defer reader.Close()
-	// Consume the pull output
-	io.Copy(io.Discard, reader)
+	// If image exists locally, skip pull
 
 	// Use provided config or create default
 	if config == nil {
