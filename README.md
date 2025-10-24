@@ -115,7 +115,7 @@ PORT=3000 ./bin/shellcraft-server
 SHELLCRAFT_IMAGE=busybox:latest ./bin/shellcraft-server
 ```
 
-Server starts on port `8080` by default.
+Server starts on port `4242` by default.
 
 ### Test
 
@@ -142,7 +142,7 @@ go test ./... -short
 ### 1. Create a session
 
 ```bash
-curl -X POST http://localhost:8080/session
+curl -X POST http://localhost:4242/session
 ```
 
 Response:
@@ -155,11 +155,11 @@ Response:
 
 ### 2. Open web terminal
 
-Visit: `http://localhost:8080/session/3b1f8e4a-.../connect`
+Visit: `http://localhost:4242/session/3b1f8e4a-.../connect`
 
 Or connect programmatically via WebSocket:
 ```javascript
-const ws = new WebSocket('ws://localhost:8080/session/3b1f8e4a-.../ws');
+const ws = new WebSocket('ws://localhost:4242/session/3b1f8e4a-.../ws');
 ws.onmessage = (event) => console.log(event.data);
 ws.send('ls\n');
 ```
@@ -167,7 +167,7 @@ ws.send('ls\n');
 ### 3. Check status
 
 ```bash
-curl http://localhost:8080/session/3b1f8e4a-.../status
+curl http://localhost:4242/session/3b1f8e4a-.../status
 ```
 
 Response:
@@ -226,7 +226,7 @@ shellcraft/
 
 | Environment Variable | Default | Description |
 |---------------------|---------|-------------|
-| `PORT` | `8080` | HTTP server port |
+| `PORT` | `4242` | HTTP server port |
 | `SHELLCRAFT_IMAGE` | `alpine:latest` | Default container image |
 
 ---

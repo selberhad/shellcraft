@@ -72,10 +72,10 @@ Or directly:
 Expected output:
 ```
 2025/10/24 17:15:00 Started cleanup manager (interval: 5m0s, timeout: 15m0s)
-2025/10/24 17:15:00 Starting ShellCraft server on port 8080
+2025/10/24 17:15:00 Starting ShellCraft server on port 4242
 ```
 
-Server is now running at `http://localhost:8080`
+Server is now running at `http://localhost:4242`
 
 ---
 
@@ -83,13 +83,13 @@ Server is now running at `http://localhost:8080`
 
 ### a) Health Check
 ```bash
-curl http://localhost:8080/healthz
+curl http://localhost:4242/healthz
 # Response: ok
 ```
 
 ### b) Create Session
 ```bash
-curl -X POST http://localhost:8080/session
+curl -X POST http://localhost:4242/session
 ```
 
 Response:
@@ -104,7 +104,7 @@ Response:
 
 Copy the `session_id` from above and open in browser:
 ```
-http://localhost:8080/session/{session_id}/connect
+http://localhost:4242/session/{session_id}/connect
 ```
 
 You should see a terminal interface! Type commands like:
@@ -115,7 +115,7 @@ You should see a terminal interface! Type commands like:
 
 ### d) Check Status
 ```bash
-curl http://localhost:8080/session/{session_id}/status
+curl http://localhost:4242/session/{session_id}/status
 ```
 
 Response:
@@ -127,7 +127,7 @@ Response:
 
 ### e) Cleanup
 ```bash
-curl -X DELETE http://localhost:8080/session/{session_id}
+curl -X DELETE http://localhost:4242/session/{session_id}
 ```
 
 Response:
@@ -244,21 +244,21 @@ make build
 ./bin/shellcraft-server &
 
 # 6. Create session
-SESSION=$(curl -s -X POST http://localhost:8080/session | jq -r .session_id)
+SESSION=$(curl -s -X POST http://localhost:4242/session | jq -r .session_id)
 echo "Session ID: $SESSION"
 
 # 7. Open in browser
-open "http://localhost:8080/session/$SESSION/connect"
+open "http://localhost:4242/session/$SESSION/connect"
 
 # 8. Or connect via WebSocket (using wscat)
 # npm install -g wscat
-# wscat -c "ws://localhost:8080/session/$SESSION/ws"
+# wscat -c "ws://localhost:4242/session/$SESSION/ws"
 
 # 9. Check status
-curl http://localhost:8080/session/$SESSION/status
+curl http://localhost:4242/session/$SESSION/status
 
 # 10. Cleanup
-curl -X DELETE http://localhost:8080/session/$SESSION
+curl -X DELETE http://localhost:4242/session/$SESSION
 
 # 11. Stop server
 pkill shellcraft-server
