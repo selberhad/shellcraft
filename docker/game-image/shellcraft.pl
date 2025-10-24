@@ -16,9 +16,8 @@ use Combat;
 # Initialize player or load save
 my $player = Player->load_or_create('/home/spellbook.dat');
 
-# Print welcome message AFTER we know someone is connected
-# (first read will block until WebSocket connects)
-my $first_line = 1;
+# Print player stats (welcome banner is shown by server)
+print_player_stats($player);
 
 # Main game loop
 while (1) {
@@ -29,18 +28,6 @@ while (1) {
     my $input = <STDIN>;
     last unless defined $input;  # EOF (Ctrl+D)
     chomp $input;
-
-    # Show welcome on first input
-    if ($first_line) {
-        $first_line = 0;
-        # Move cursor up to overwrite the empty prompt
-        print "\r\033[K";  # Clear current line
-        print_welcome($player);
-        # Re-print prompt
-        print_prompt($player);
-        # If they typed something, process it
-        next if $input =~ /^\s*$/;
-    }
 
     # Skip empty lines
     next if $input =~ /^\s*$/;
@@ -103,17 +90,9 @@ while (1) {
 # Helper Functions
 # ============================================================================
 
-sub print_welcome {
+sub print_player_stats {
     my ($player) = @_;
 
-    if (-f '/etc/shellcraft/welcome.txt') {
-        open my $fh, '<', '/etc/shellcraft/welcome.txt' or return;
-        print while <$fh>;
-        close $fh;
-    }
-
-    print "\n";
-    print "=== ShellCraft v0.1 ===\n";
     print "Welcome back, $player->{name}!\n";
     print "Level $player->{level} | XP: $player->{xp}/" . $player->xp_for_next_level() . "\n";
     print "\n";

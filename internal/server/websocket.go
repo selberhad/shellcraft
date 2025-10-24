@@ -47,6 +47,28 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
 
+	// Send welcome screen immediately via WebSocket
+	// This ensures the player sees it before container starts
+	welcomeScreen := `
+    ███████╗██╗  ██╗███████╗██╗     ██╗      ██████╗██████╗  █████╗ ███████╗████████╗
+    ██╔════╝██║  ██║██╔════╝██║     ██║     ██╔════╝██╔══██╗██╔══██╗██╔════╝╚══██╔══╝
+    ███████╗███████║█████╗  ██║     ██║     ██║     ██████╔╝███████║█████╗     ██║
+    ╚════██║██╔══██║██╔══╝  ██║     ██║     ██║     ██╔══██╗██╔══██║██╔══╝     ██║
+    ███████║██║  ██║███████╗███████╗███████╗╚██████╗██║  ██║██║  ██║██║        ██║
+    ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝        ╚═╝
+
+    A UNIX Shell RPG                                                          v0.1
+
+    The shell is your weapon. Commands are your spells.
+    Master the terminal, level up your skills, and explore the digital realm.
+
+
+=== ShellCraft v0.1 ===
+Initializing your adventure...
+
+`
+	ws.WriteMessage(websocket.TextMessage, []byte(welcomeScreen))
+
 	// Start the container now (it was created but not started)
 	if err := s.dockerClient.StartContainer(ctx, sess.ContainerID); err != nil {
 		log.Printf("Failed to start container: %v", err)
