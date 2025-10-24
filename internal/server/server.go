@@ -13,6 +13,13 @@ import (
 	"github.com/shellcraft/server/internal/session"
 )
 
+// Configuration constants
+const (
+	// MaxConcurrentSessions limits total active sessions based on available server RAM
+	// With 3GB available and 50MB per container, safe limit is ~40 players
+	MaxConcurrentSessions = 40
+)
+
 // Server represents the ShellCraft orchestration server
 type Server struct {
 	router         *chi.Mux
@@ -65,6 +72,7 @@ func (s *Server) Router() *chi.Mux {
 // registerRoutes sets up all HTTP routes
 func (s *Server) registerRoutes() {
 	s.router.Get("/healthz", s.handleHealthCheck)
+	s.router.Get("/metrics", s.handleMetrics)
 	s.router.Post("/session", s.handleCreateSession)
 	s.router.Delete("/session/{id}", s.handleDeleteSession)
 	s.router.Get("/session/{id}/status", s.handleGetSessionStatus)
@@ -81,6 +89,21 @@ func (s *Server) handleHealthCheck(w http.ResponseWriter, r *http.Request) {
 // handleCreateSession creates a new session and container
 func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
+
+	// Check server capacity before creating new session
+	activeSessions := s.sessionManager.ListSessions()
+	if len(activeSessions) >= MaxConcurrentSessions {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusServiceUnavailable)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error":           "Server at capacity",
+			"active_sessions": len(activeSessions),
+			"max_sessions":    MaxConcurrentSessions,
+			"message":         "Please try again later or wait for a slot to open",
+		})
+		log.Printf("Rejected session creation: %d/%d sessions active", len(activeSessions), MaxConcurrentSessions)
+		return
+	}
 
 	// Parse request body for optional image name
 	var req struct {

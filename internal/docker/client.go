@@ -57,7 +57,7 @@ func (d *DockerClient) ListImages(ctx context.Context) ([]string, error) {
 	return imageNames, nil
 }
 
-// CreateContainer creates a new container from an image
+// CreateContainer creates a new container from an image with resource limits
 func (d *DockerClient) CreateContainer(ctx context.Context, imageName string, config *container.Config) (string, error) {
 	// Pull image if not present
 	reader, err := d.cli.ImagePull(ctx, imageName, image.PullOptions{})
@@ -78,7 +78,20 @@ func (d *DockerClient) CreateContainer(ctx context.Context, imageName string, co
 		config.Image = imageName
 	}
 
-	resp, err := d.cli.ContainerCreate(ctx, config, nil, nil, nil, "")
+	// Resource limits for game containers
+	hostConfig := &container.HostConfig{
+		Resources: container.Resources{
+			Memory:     50 * 1024 * 1024, // 50MB hard limit
+			MemorySwap: 50 * 1024 * 1024, // Disable swap (same as memory = no swap)
+			CPUShares:  512,              // 50% CPU priority
+		},
+		// Prevent containers from consuming excessive I/O
+		RestartPolicy: container.RestartPolicy{
+			Name: "no",
+		},
+	}
+
+	resp, err := d.cli.ContainerCreate(ctx, config, hostConfig, nil, nil, "")
 	if err != nil {
 		return "", err
 	}
