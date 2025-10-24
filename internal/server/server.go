@@ -71,6 +71,7 @@ func (s *Server) Router() *chi.Mux {
 
 // registerRoutes sets up all HTTP routes
 func (s *Server) registerRoutes() {
+	s.router.Get("/", s.handleIndex)
 	s.router.Get("/healthz", s.handleHealthCheck)
 	s.router.Get("/metrics", s.handleMetrics)
 	s.router.Post("/session", s.handleCreateSession)
