@@ -184,6 +184,10 @@ sub spawn_rat {
     }
 
     close $fh;
+
+    # Make rat file world-writable so player can delete it
+    # DM runs as root, player runs as 'player' user
+    chmod 0666, $rat_file;
 }
 
 # Create symlink maze structure in under_nix
