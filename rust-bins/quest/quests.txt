@@ -9,15 +9,17 @@ min_level=0
 reward_xp=1000
 offer_title=The Sewer Cleanse
 offer_narrative="""
-A terrible stench rises from the sewers beneath the city.
-The rat infestation has grown out of control. Someone must
-venture into the darkness and clear them out.
+The garbage collection zones are overrun. Corrupted processes
+scurry through /sewer, remnants of programs that refused to die
+cleanly. The system's immune response has failed. These .rat files
+must be purged manually, one by one, before they consume what little
+memory remains.
 """
 offer_objective=Eliminate all rats in /sewer
 offer_reward=1000 XP
 journal_description="""
-The sewers beneath the city are infested with rats.
-Venture into /sewer and eliminate every last one.
+The garbage collector has failed. /sewer is infested with
+orphaned process remnants. Purge them all.
 """
 progress_format={count} rats remaining
 completion_message=The Dungeon Master will grant your reward shortly.
@@ -29,15 +31,17 @@ min_level=2
 reward_xp=2000
 offer_title=The Crack
 offer_narrative="""
-You've mastered the basic commands. Now it's time to discover
-what lies hidden in the shadows. The sewers hold secrets that
-only reveal themselves to those who know where to look.
+The walls of the filesystem are not as solid as they appear.
+There are places where the permissions have worn thin, where
+dotfiles whisper of deeper layers. The old phreakers spoke of
+finding cracks in systems—not to destroy, but to explore what
+was always there, just hidden. What does /sewer conceal?
 """
 offer_objective=Discover the hidden .crack/ directory in /sewer
 offer_reward=2000 XP
 journal_description="""
-Explore the hidden areas of the sewer.
-Use 'ls -a' in /sewer to reveal what's hidden.
+Find the hidden directory in /sewer. Not all paths are visible
+to those who look without the -a flag.
 """
 journal_objective=Discover the .crack/ directory
 journal_reward=2000 XP
@@ -49,15 +53,17 @@ min_level=3
 reward_xp=3000
 offer_title=The Locked Door
 offer_narrative="""
-Beyond the crack in the wall lies a locked door. Ancient
-mechanisms guard the passage deeper. You'll need to create
-the right tool to open it.
+Beyond the crack lies a sealed inode, locked with permissions
+you cannot yet bypass. But locks are just files pretending to be
+barriers. The door expects a specific pattern—a .key file with
+the right magic bytes. Social engineering for filesystems.
+Create the key. Convince the door you belong here.
 """
 offer_objective=Create a key and unlock the door in .crack/
 offer_reward=3000 XP
 journal_description="""
-A locked door blocks your path in /sewer/.crack/
-Find a way to unlock it.
+A locked door in /sewer/.crack/ blocks deeper access.
+The door expects a .key file. Forge it.
 """
 journal_objective=Create a key and unlock the door
 journal_reward=3000 XP
@@ -69,14 +75,18 @@ min_level=5
 reward_xp=8000
 offer_title=Portal Home
 offer_narrative="""
-You've discovered Under-Nix, but the journey is long.
-Create a shortcut from your home directory using the
-power of symbolic links.
+You've found Under-Nix—the layer beneath the layer, the world
+below the world. But traveling through /sewer every time is
+tedious. The old sysadmins knew the truth: distance is an illusion
+in a filesystem. Space and time collapse into inodes and pointers.
+Create a symbolic link—a wormhole through the directory tree.
+Bend space. Make /home know about the depths.
 """
 offer_objective=Create a symlink from /home to under_nix
 offer_reward=8000 XP
 journal_description="""
-Create a symlink from /home to under_nix for quick access.
+Link /sewer/.crack/under_nix to /home/portal for instant access.
+The ln command bends space itself.
 """
 journal_objective=ln -s /sewer/.crack/under_nix /home/portal
 journal_reward=8000 XP
@@ -88,15 +98,18 @@ min_level=6
 reward_xp=13000
 offer_title=Navigate the Maze
 offer_narrative="""
-Under-Nix is a twisted labyrinth of symbolic links.
-Somewhere within lies a treasure, but you'll need to
-see where the paths truly lead to find it.
+Under-Nix is not a place. It's a knot of references, a maze
+of pointers pointing to pointers. The Wyrm dreams here, they say,
+and its dreams are recursive. Paths fold back on themselves.
+Directories that lead nowhere and everywhere. But somewhere in
+this tangle of symlinks lies something real—a treasure the maze
+was built to hide. Follow the arrows. Trust nothing but 'ls -l'.
 """
 offer_objective=Find the treasure in the symlink maze
 offer_reward=13000 XP
 journal_description="""
-The symlink maze in under_nix hides a treasure.
-Use 'ls -l' to see where symlinks point.
+The symlink labyrinth in under_nix conceals a treasure.
+Navigate the maze. Let 'ls -l' reveal the true paths.
 """
 journal_objective=Find the treasure in the maze
 journal_reward=13000 XP

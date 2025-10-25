@@ -78,9 +78,7 @@ Built with **TDD-first methodology** following principles from `LEXICON.md`.
 cd shellcraft
 
 # 2. Build the game Docker image
-cd docker/game-image
-docker build -t shellcraft/game:latest .
-cd ../..
+./build-game-image.sh
 
 # 3. Build the server
 make build
@@ -420,8 +418,7 @@ echo "Secret message..." > /tower/scroll.txt
 
 Then rebuild:
 ```bash
-cd docker/game-image
-docker build -t shellcraft/game:latest .
+./build-game-image.sh
 ```
 
 ### Modify Progression
@@ -467,7 +464,7 @@ docker info
 docker images | grep shellcraft
 
 # Rebuild if needed
-cd docker/game-image && docker build -t shellcraft/game:latest .
+./build-game-image.sh
 ```
 
 ### Out of memory errors
