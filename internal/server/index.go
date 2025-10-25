@@ -115,7 +115,7 @@ const indexHTML = `<!DOCTYPE html>
         </div>
 
         <button class="button" onclick="createSession()">🎮 Start New Game</button>
-        <a href="/metrics" class="button" style="background: #333; color: #00ff00;">📊 Server Metrics</a>
+        <a href="metrics" class="button" style="background: #333; color: #00ff00;">📊 Server Metrics</a>
 
         <div class="session-info" id="sessionInfo">
             <h3>✅ Session Created!</h3>
@@ -135,10 +135,13 @@ const indexHTML = `<!DOCTYPE html>
     </div>
 
     <script>
+        // Get base path from current location (e.g., "/shellcraft" or "/")
+        const basePath = window.location.pathname.replace(/\/$/, '') || '';
+
         // Fetch server metrics on load
         async function updateMetrics() {
             try {
-                const response = await fetch('/metrics');
+                const response = await fetch(basePath + '/metrics');
                 const data = await response.json();
 
                 document.getElementById('activeSessions').textContent = data.active_sessions;
@@ -156,7 +159,7 @@ const indexHTML = `<!DOCTYPE html>
             button.textContent = '⏳ Creating...';
 
             try {
-                const response = await fetch('/session', {
+                const response = await fetch(basePath + '/session', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -176,7 +179,7 @@ const indexHTML = `<!DOCTYPE html>
                 // Show session info
                 document.getElementById('sessionId').textContent = data.session_id;
                 document.getElementById('containerId').textContent = data.container_id;
-                document.getElementById('playLink').href = '/session/' + data.session_id + '/connect';
+                document.getElementById('playLink').href = basePath + '/session/' + data.session_id + '/connect';
                 document.getElementById('sessionInfo').classList.add('active');
 
                 // Update metrics
@@ -184,7 +187,7 @@ const indexHTML = `<!DOCTYPE html>
 
                 // Auto-redirect after 2 seconds
                 setTimeout(() => {
-                    window.location.href = '/session/' + data.session_id + '/connect';
+                    window.location.href = basePath + '/session/' + data.session_id + '/connect';
                 }, 2000);
 
             } catch (err) {
