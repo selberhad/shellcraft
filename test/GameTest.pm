@@ -169,6 +169,75 @@ sub can_use {
     return Commands::is_unlocked($command, $self->{player}{level});
 }
 
+# Filesystem helpers
+sub create_file {
+    my ($self, $path, $content) = @_;
+
+    open my $fh, '>', $path or die "Can't create file $path: $!";
+    print $fh $content;
+    close $fh;
+
+    $self->log("Created file $path");
+
+    return $self;
+}
+
+# Command execution helpers
+sub run_command {
+    my ($self, $command) = @_;
+
+    my $output = `$command 2>&1`;
+    my $exit_code = $? >> 8;
+
+    $self->{last_command} = $command;
+    $self->{last_output} = $output;
+    $self->{last_exit_code} = $exit_code;
+
+    $self->log("Ran command: $command (exit=$exit_code)");
+
+    return $self;
+}
+
+sub get_command_output {
+    my ($self, $command) = @_;
+
+    $self->run_command($command);
+
+    return $self->{last_output};
+}
+
+# Dungeon Master helpers
+sub trigger_dm_tick {
+    my ($self) = @_;
+
+    # Try to run dungeon-master --tick
+    # Note: DM runs as root, so this might fail in test environment
+    # We handle this gracefully
+    my $dm_path = '/usr/sbin/dungeon-master';
+
+    if (-x $dm_path) {
+        my $output = `$dm_path --tick 2>&1`;
+        my $exit_code = $? >> 8;
+
+        if ($exit_code == 0) {
+            $self->log("DM tick executed successfully");
+        } else {
+            $self->log("DM tick failed (exit=$exit_code)");
+            $self->log("DM output: $output") if $output;
+        }
+    } else {
+        $self->log("DM not found or not executable - skipping tick");
+    }
+
+    # Reload player state from disk (DM may have modified soul.dat)
+    if (-f $self->{save_path}) {
+        $self->{player} = Player->load($self->{save_path});
+        $self->log("Reloaded player state after DM tick");
+    }
+
+    return $self;
+}
+
 # Assertions
 # ==========
 
@@ -341,6 +410,129 @@ sub expect_xp_at_least {
         $self->log("✓ XP $actual >= $min_xp");
     } else {
         $self->fail("Expected XP >= $min_xp, got $actual");
+    }
+
+    return $self;
+}
+
+# Filesystem assertions
+sub expect_file_exists {
+    my ($self, $path) = @_;
+
+    $self->{assertions}++;
+
+    if (-f $path) {
+        $self->log("✓ File exists: $path");
+    } else {
+        $self->fail("Expected file to exist: $path");
+    }
+
+    return $self;
+}
+
+sub expect_file_not_exists {
+    my ($self, $path) = @_;
+
+    $self->{assertions}++;
+
+    if (!-f $path) {
+        $self->log("✓ File does not exist: $path");
+    } else {
+        $self->fail("Expected file to NOT exist: $path");
+    }
+
+    return $self;
+}
+
+sub expect_dir_exists {
+    my ($self, $path) = @_;
+
+    $self->{assertions}++;
+
+    if (-d $path) {
+        $self->log("✓ Directory exists: $path");
+    } else {
+        $self->fail("Expected directory to exist: $path");
+    }
+
+    return $self;
+}
+
+sub expect_dir_not_exists {
+    my ($self, $path) = @_;
+
+    $self->{assertions}++;
+
+    if (!-d $path) {
+        $self->log("✓ Directory does not exist: $path");
+    } else {
+        $self->fail("Expected directory to NOT exist: $path");
+    }
+
+    return $self;
+}
+
+sub expect_file_contains {
+    my ($self, $path, $pattern) = @_;
+
+    $self->{assertions}++;
+
+    # Read file contents
+    if (!-f $path) {
+        $self->fail("Cannot check file contents: $path does not exist");
+        return $self;
+    }
+
+    open my $fh, '<', $path or do {
+        $self->fail("Cannot read file: $path");
+        return $self;
+    };
+
+    my $content = do { local $/; <$fh> };
+    close $fh;
+
+    # Check if pattern matches
+    my $matches = ref($pattern) eq 'Regexp'
+        ? $content =~ /$pattern/
+        : $content =~ /\Q$pattern\E/;
+
+    if ($matches) {
+        $self->log("✓ File contains pattern: $path");
+    } else {
+        $self->fail("Expected file to contain pattern '$pattern': $path");
+    }
+
+    return $self;
+}
+
+# Command execution assertions
+sub expect_command_success {
+    my ($self, $command) = @_;
+
+    $self->{assertions}++;
+
+    $self->run_command($command);
+
+    if ($self->{last_exit_code} == 0) {
+        $self->log("✓ Command succeeded: $command");
+    } else {
+        $self->fail("Expected command to succeed (exit 0), got exit code $self->{last_exit_code}: $command");
+    }
+
+    return $self;
+}
+
+sub expect_command_fails {
+    my ($self, $command) = @_;
+
+    $self->{assertions}++;
+
+    $self->run_command($command);
+
+    if ($self->{last_exit_code} != 0) {
+        $self->log("✓ Command failed as expected: $command");
+    } else {
+        $self->fail("Expected command to fail (exit non-zero), but got exit 0: $command");
     }
 
     return $self;

@@ -208,11 +208,24 @@ sub handle_cd {
     # Attempt to change directory
     if (chdir $dir) {
         # Success - directory changed
+        # Write current PWD for DM quest tracking
+        write_pwd();
         return 1;
     } else {
         # Failed
         print "cd: $dir: No such file or directory\n";
         return 0;
+    }
+}
+
+sub write_pwd {
+    use Cwd;
+    my $pwd = getcwd();
+    my $pwd_file = $ENV{HOME} . '/.pwd';
+
+    if (open my $fh, '>', $pwd_file) {
+        print $fh $pwd;
+        close $fh;
     }
 }
 

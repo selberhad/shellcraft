@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use lib '/usr/local/lib/shellcraft';
 use Player;
+use Commands;
 
 # Dungeon Master - Root cron process that orchestrates the game world
 # Runs every minute via root crontab
@@ -25,14 +26,27 @@ my $MAX_RATS = 5;
 
 # Quest definitions
 my $QUEST_SEWER_CLEANSE = 1;
-my $QUEST_SEWER_XP = 500;
+my $QUEST_THE_CRACK = 2;
+my $QUEST_LOCKED_DOOR = 3;
+my $QUEST_PORTAL_HOME = 4;
+my $QUEST_NAVIGATE_MAZE = 5;
+
+# Quest rewards (should grant full XP to reach next level)
+my $QUEST_SEWER_XP = 1000;   # L0->L1 requires 1000 XP
+my $QUEST_CRACK_XP = 2000;   # L1->L2 requires 2000 XP
+my $QUEST_DOOR_XP = 3000;    # L2->L3 requires 3000 XP
+my $QUEST_PORTAL_XP = 8000;  # L4->L5 requires 8000 XP
+my $QUEST_MAZE_XP = 13000;   # L5->L6 requires 13000 XP
 
 # Main tick - run if called directly or with --tick
 my $should_tick = (@ARGV == 0) || ($ARGV[0] eq '--tick');
 main() if $should_tick;
 
 sub main {
-    # Load player soul (read-only for quest checks)
+    # Check for door transformation (L3 quest) - must happen FIRST
+    check_door_transformation();
+
+    # Load player soul AFTER transformations (so quest checks see current state)
     my $player = Player->load_or_create($SOUL_PATH);
 
     # Check quest completions and award XP
@@ -55,10 +69,46 @@ sub check_quests {
             # Check if all rats are dead
             my $rat_count = count_rats();
             if ($rat_count == 0) {
-                # Quest complete! Award XP and remove quest
                 $player->add_xp($QUEST_SEWER_XP);
                 $player->remove_quest($QUEST_SEWER_CLEANSE);
                 $awarded_xp += $QUEST_SEWER_XP;
+            }
+        }
+        elsif ($quest_id == $QUEST_THE_CRACK) {
+            # Check if player is currently in .crack/ directory
+            my $pwd = read_player_pwd();
+            if ($pwd && $pwd =~ m{/\.crack$}) {
+                $player->add_xp($QUEST_CRACK_XP);
+                $player->remove_quest($QUEST_THE_CRACK);
+                $awarded_xp += $QUEST_CRACK_XP;
+            }
+        }
+        elsif ($quest_id == $QUEST_LOCKED_DOOR) {
+            # Check if under_nix directory exists (door has been unlocked)
+            if (-d '/sewer/.crack/under_nix') {
+                $player->add_xp($QUEST_DOOR_XP);
+                $player->remove_quest($QUEST_LOCKED_DOOR);
+                $awarded_xp += $QUEST_DOOR_XP;
+            }
+        }
+        elsif ($quest_id == $QUEST_PORTAL_HOME) {
+            # Check if portal symlink exists
+            if (-l '/home/portal') {
+                my $target = readlink('/home/portal');
+                if ($target && $target =~ /under_nix/) {
+                    $player->add_xp($QUEST_PORTAL_XP);
+                    $player->remove_quest($QUEST_PORTAL_HOME);
+                    $awarded_xp += $QUEST_PORTAL_XP;
+                }
+            }
+        }
+        elsif ($quest_id == $QUEST_NAVIGATE_MAZE) {
+            # Check if treasure has been found (not implemented yet)
+            # Placeholder for future implementation
+            if (-f '/sewer/.crack/under_nix/treasure') {
+                $player->add_xp($QUEST_MAZE_XP);
+                $player->remove_quest($QUEST_NAVIGATE_MAZE);
+                $awarded_xp += $QUEST_MAZE_XP;
             }
         }
     }
@@ -108,4 +158,53 @@ sub spawn_rat {
     }
 
     close $fh;
+}
+
+# L3 Quest: Door Transformation
+# Check if player has created a key file in .crack/
+# If so, transform locked_door into under_nix/ directory
+sub check_door_transformation {
+    my $crack_path = '/sewer/.crack';
+    my $key_file = "$crack_path/key";
+    my $door_file = "$crack_path/locked_door";
+    my $under_nix_path = "$crack_path/under_nix";
+
+    # Check if key exists and door hasn't been transformed yet
+    if (-f $key_file && -f $door_file) {
+        # Remove the locked door
+        unlink $door_file;
+
+        # Create under_nix directory
+        mkdir $under_nix_path, 0755;
+
+        # Create a simple symlink maze structure inside under_nix
+        # This will be expanded in later phases for L4-L6 quests
+        mkdir "$under_nix_path/room1", 0755;
+        mkdir "$under_nix_path/room2", 0755;
+
+        # Add a welcome message
+        open my $fh, '>', "$under_nix_path/README.txt" or return;
+        print $fh "You have entered Under-Nix, the realm beneath the sewers.\n\n";
+        print $fh "The path ahead is treacherous and confusing.\n";
+        print $fh "You will need better tools to navigate these passages.\n";
+        close $fh;
+
+        # Consume the key (it's used up)
+        unlink $key_file;
+    }
+}
+
+sub read_player_pwd {
+    my $pwd_file = '/home/.pwd';
+
+    return undef unless -f $pwd_file;
+
+    if (open my $fh, '<', $pwd_file) {
+        my $pwd = <$fh>;
+        close $fh;
+        chomp $pwd if defined $pwd;
+        return $pwd;
+    }
+
+    return undef;
 }

@@ -8,6 +8,28 @@ for i in 1 2 3 4 5; do
     dd if=/dev/urandom of=/sewer/rat_$i.rat bs=1 count=$((100 + RANDOM % 400)) 2>/dev/null
 done
 
+# Create hidden .crack/ directory for L2 quest
+mkdir -p /sewer/.crack
+cat > /sewer/.crack/.clue << 'EOF'
+You found a crack in the sewer wall!
+
+Behind the crumbling stone, a narrow passage leads deeper.
+The air here smells of ancient secrets and forgotten paths.
+
+A locked door blocks your way forward. Perhaps you need a key...
+EOF
+
+# Create locked door for L3 quest
+cat > /sewer/.crack/locked_door << 'EOF'
+A heavy stone door blocks the passage deeper into the crack.
+
+An ancient lock mechanism is carved into the stone. The keyhole
+is shaped like a simple file - perhaps any file named "key" would work?
+
+The door seems to respond to the presence of objects, not their contents.
+Touch alone might be enough...
+EOF
+
 # Create crypt enemies (mid game)
 mkdir -p /crypt
 dd if=/dev/urandom of=/crypt/skeleton.elf bs=1 count=800 2>/dev/null

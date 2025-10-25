@@ -2,34 +2,35 @@ package Commands;
 use strict;
 use warnings;
 
-# Command unlock table from GAMESHELL.md
+# Command unlock table - NEW L0-L6 progression (pedagogical, puzzle-focused)
 my %UNLOCKS = (
-    0  => [qw(ls cat echo rm cd pwd whoami mkdir touch)],
-    1  => ['ls -l', 'ls -a', 'ls -la'],
-    2  => [qw(mv cp)],
-    3  => [qw(rmdir)],
-    4  => [qw(file wc)],
-    5  => [qw(head tail)],
-    6  => [qw(grep)],
-    7  => ['grep -i', 'grep -n', 'grep -v'],
-    8  => [qw(sort)],
-    9  => [qw(uniq)],
-    10 => ['wc -l', 'wc -w', 'wc -c'],
-    11 => ['head -n', 'tail -n', 'tail -f'],
-    12 => [qw(find)],
-    13 => [qw(awk)],
-    14 => [qw(sed)],
-    15 => [qw(chmod)],
-    16 => [qw(chown)],
-    17 => [qw(ps)],
-    18 => [qw(kill)],
-    19 => [qw(tar)],
-    20 => ['perl -e'],
+    0  => [qw(ls cat echo rm cd pwd whoami)],  # Tutorial basics
+    1  => ['ls -s'],        # File sizes (for rat combat)
+    2  => ['ls -a'],        # Hidden files (discover .crack/)
+    3  => [qw(touch)],      # Create files (make key for locked door)
+    4  => ['ls -R'],        # Recursive listing (discover symlink maze hangs)
+    5  => [qw(ln), 'ln -s'],  # Symlinks (create portal)
+    6  => ['ls -l'],        # Long listing (see symlink targets, solve maze)
+    # Old progression continues from L7+
+    7  => [qw(mkdir mv cp)],
+    8  => [qw(rmdir)],
+    9  => [qw(file wc)],
+    10 => [qw(head tail)],
+    11 => [qw(grep)],
+    12 => ['grep -i', 'grep -n', 'grep -v'],
+    13 => [qw(sort)],
+    14 => [qw(uniq)],
+    15 => ['wc -l', 'wc -w', 'wc -c'],
+    16 => ['head -n', 'tail -n', 'tail -f'],
+    17 => [qw(find)],
+    18 => [qw(awk)],
+    19 => [qw(sed)],
+    20 => [qw(chmod)],
 );
 
 # Base commands that are always available (level 0)
 my @BASE_COMMANDS = qw(
-    ls cat echo rm cd pwd whoami mkdir touch
+    ls cat echo rm cd pwd whoami
     status help exit quit
 );
 
