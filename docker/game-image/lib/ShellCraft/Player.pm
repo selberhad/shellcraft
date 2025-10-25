@@ -44,7 +44,7 @@ sub load_or_create {
     }
 }
 
-# Load player from spellbook.dat
+# Load player from soul.dat
 sub load {
     my ($class, $save_path) = @_;
 
@@ -96,10 +96,10 @@ sub load {
     return $player;
 }
 
-# Save player to spellbook.dat
+# Save player to soul.dat
 sub save {
     my ($self, $save_path) = @_;
-    $save_path ||= '/home/spellbook.dat';
+    $save_path ||= '/home/soul.dat';
 
     open my $fh, '>', $save_path or do {
         warn "Failed to save: $!\n";

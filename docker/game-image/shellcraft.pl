@@ -14,7 +14,7 @@ use Commands;
 use Combat;
 
 # Initialize player or load save
-my $player = Player->load_or_create('/home/spellbook.dat');
+my $player = Player->load_or_create('/home/soul.dat');
 
 # Print player stats (welcome banner is shown by server)
 print_player_stats($player);
@@ -186,7 +186,7 @@ sub show_help {
     print "  - Explore /crypt, /tower, and /etc/scrolls for quests\n";
     print "\n";
     print "Use standard UNIX commands to interact with the world.\n";
-    print "Your progress is saved in /home/spellbook.dat\n";
+    print "Your progress is saved in /home/soul.dat\n";
     print "\n";
 }
 

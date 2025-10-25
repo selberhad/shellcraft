@@ -128,12 +128,12 @@ sub handle_death {
     print "        YOU HAVE DIED                 \n";
     print "======================================\n";
     print "\n";
-    print "Your spellbook crumbles to dust...\n";
+    print "Your soul dissipates into the void...\n";
     print "All progress has been lost.\n";
     print "\n";
 
     # Delete the save file (like the telomeres being destroyed)
-    unlink '/home/spellbook.dat';
+    unlink '/home/soul.dat';
 
     # Exit the game
     exit(0);

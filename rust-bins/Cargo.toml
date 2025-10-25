@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = [
+    "quest",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["ShellCraft Contributors"]
+
+[workspace.dependencies]
+# Shared dependencies for all binaries
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
