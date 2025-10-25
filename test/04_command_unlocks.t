@@ -1,0 +1,53 @@
+#!/usr/bin/env perl
+# Test: Command unlock validation
+#
+# Verifies the command validation fix:
+# - Base commands work at L0
+# - Flags are blocked until unlocked
+# - Arguments (filenames) work with base commands
+
+use strict;
+use warnings;
+use lib '/usr/local/lib/shellcraft';
+use lib '/tmp';  # GameTest.pm mounted here
+use GameTest;
+
+my $game = GameTest->new(
+    test_name => 'Command Unlock Validation',
+    verbose   => 1,
+);
+
+# Level 0 tests
+$game->start_fresh()
+     ->expect_level(0)
+     ->expect_can_use('ls')           # Base command OK
+     ->expect_can_use('ls /home')     # With filename OK
+     ->expect_cannot_use('ls -l')     # Flag blocked
+     ->expect_cannot_use('ls -a')     # Flag blocked
+     ->expect_cannot_use('grep')      # Not unlocked yet
+     ->expect_cannot_use('grep -i');  # Definitely not
+
+# Level up to 1
+$game->add_xp(100)
+     ->expect_level(1)
+     ->expect_can_use('ls -l')        # Now unlocked!
+     ->expect_can_use('ls -a')        # Also unlocked
+     ->expect_can_use('ls -l /home')  # Flag + filename OK
+     ->expect_cannot_use('grep');     # Still locked
+
+# Level up to 6 (grep unlocked)
+$game->add_xp(1000)
+     ->expect_level(6)
+     ->expect_can_use('grep')         # Base grep OK
+     ->expect_can_use('grep pattern file')  # With args OK
+     ->expect_cannot_use('grep -i')   # Flag still locked
+     ->expect_cannot_use('grep -n');
+
+# Level up to 7 (grep flags unlocked)
+$game->add_xp(500)
+     ->expect_level(7)
+     ->expect_can_use('grep -i')      # Now unlocked
+     ->expect_can_use('grep -n')      # Also unlocked
+     ->expect_can_use('grep -i pattern file');  # Flag + args OK
+
+exit($game->report() ? 0 : 1);

@@ -53,9 +53,9 @@ while (1) {
         next;
     }
 
-    # Check if command is unlocked
-    unless (Commands::is_unlocked($cmd, $player->{level})) {
-        print_locked_message($cmd);
+    # Check if command is unlocked (pass full input to validate arguments)
+    unless (Commands::is_unlocked($input, $player->{level})) {
+        print_locked_message($input);
         next;
     }
 
@@ -94,7 +94,7 @@ sub print_player_stats {
     my ($player) = @_;
 
     print "Welcome back, $player->{name}!\n";
-    print "Level $player->{level} | XP: $player->{xp}/" . $player->xp_for_next_level() . "\n";
+    print "Level $player->{level} | HP: $player->{hp}/" . $player->max_hp() . " | XP: $player->{xp}/" . $player->xp_for_next_level() . "\n";
     print "\n";
     print "Type 'help' for guidance, 'status' to view your progress.\n";
     print "Type 'exit' to save and quit.\n";
@@ -140,6 +140,7 @@ sub show_status {
     print "=== Character Status ===\n";
     print "Name:  $player->{name}\n";
     print "Level: $player->{level}\n";
+    print "HP:    $player->{hp} / " . $player->max_hp() . "\n";
     print "XP:    $player->{xp} / " . $player->xp_for_next_level() . "\n";
     print "\n";
 

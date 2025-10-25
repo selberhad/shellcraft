@@ -40,26 +40,85 @@ sub is_unlocked {
     # Extract base command (before arguments/flags)
     my $base_cmd = (split /\s+/, $cmd)[0];
 
+    # Normalize whitespace for comparison
+    $cmd =~ s/\s+/ /g;
+    $cmd =~ s/^\s+|\s+$//g;
+
     # Built-in game commands are always available
     return 1 if grep { $_ eq $base_cmd } qw(status help exit quit);
 
-    # Check level 0 commands
-    return 1 if $level >= 0 && grep { $_ eq $base_cmd } @BASE_COMMANDS;
+    # Check if command has arguments
+    my $has_args = ($cmd =~ /\s/);
 
-    # Check all unlocks up to current level
-    for my $unlock_level (1 .. $level) {
-        next unless exists $UNLOCKS{$unlock_level};
+    if ($has_args) {
+        # Command has arguments - need to validate carefully
 
-        for my $unlocked_cmd (@{$UNLOCKS{$unlock_level}}) {
-            # Handle both base commands and command+arg patterns
-            my $unlocked_base = (split /\s+/, $unlocked_cmd)[0];
+        # First check if command has flags (starts with -)
+        my $has_flags = ($cmd =~ /^$base_cmd\s+-/);
 
-            return 1 if $base_cmd eq $unlocked_base;
-            return 1 if $cmd eq $unlocked_cmd;
+        if ($has_flags) {
+            # Command has flags - must match a specific unlock pattern
+            for my $unlock_level (0 .. $level) {
+                next unless exists $UNLOCKS{$unlock_level};
+
+                for my $unlocked_cmd (@{$UNLOCKS{$unlock_level}}) {
+                    # Normalize the unlocked command
+                    my $normalized_unlock = $unlocked_cmd;
+                    $normalized_unlock =~ s/\s+/ /g;
+                    $normalized_unlock =~ s/^\s+|\s+$//g;
+
+                    # Only match if the unlock pattern also has flags
+                    if ($normalized_unlock =~ /\s-/) {
+                        # Check if input starts with this flag pattern
+                        if ($cmd =~ /^\Q$normalized_unlock\E(\s|$)/) {
+                            return 1;
+                        }
+                    }
+                }
+            }
+
+            # No matching flag pattern found
+            return 0;
+        } else {
+            # Command has arguments but no flags (e.g., "ls /home")
+            # This is allowed if the base command is unlocked
+
+            # Check level 0 base commands
+            return 1 if grep { $_ eq $base_cmd } @BASE_COMMANDS;
+
+            # Check unlocks for base command without flags
+            for my $unlock_level (1 .. $level) {
+                next unless exists $UNLOCKS{$unlock_level};
+
+                for my $unlocked_cmd (@{$UNLOCKS{$unlock_level}}) {
+                    # Only consider unlocks that don't have flags
+                    next if $unlocked_cmd =~ /\s-/;
+
+                    my $unlocked_base = (split /\s+/, $unlocked_cmd)[0];
+                    return 1 if $base_cmd eq $unlocked_base;
+                }
+            }
+
+            return 0;
         }
-    }
+    } else {
+        # No arguments - just check if base command is unlocked
 
-    return 0;
+        # Check level 0 commands
+        return 1 if grep { $_ eq $base_cmd } @BASE_COMMANDS;
+
+        # Check all unlocks up to current level
+        for my $unlock_level (1 .. $level) {
+            next unless exists $UNLOCKS{$unlock_level};
+
+            for my $unlocked_cmd (@{$UNLOCKS{$unlock_level}}) {
+                my $unlocked_base = (split /\s+/, $unlocked_cmd)[0];
+                return 1 if $base_cmd eq $unlocked_base;
+            }
+        }
+
+        return 0;
+    }
 }
 
 # Get all commands unlocked at or below the given level
