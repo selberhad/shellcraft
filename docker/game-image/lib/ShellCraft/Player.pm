@@ -70,16 +70,19 @@ sub load {
     read($fh, $version_bytes, 2);
     my $version = unpack('S', $version_bytes);
 
-    # Read player data (simple format for v0.1)
+    # Read player data
     my $data;
-    read($fh, $data, 16);
-    my ($level, $xp) = unpack('LL', $data);
+    read($fh, $data, 12);
+    my ($level, $xp) = unpack('LQ<', $data);
+
+    # Skip quest slots (32 bytes) and padding (4 bytes) for now
+    seek($fh, 36, 1);  # Skip forward 36 bytes
 
     close $fh;
 
-    # HP is the "telomere" - the file size minus the header (30 bytes)
-    # Header: 4 (magic) + 2 (version) + 8 (checksum) + 8 (LL pack: level+xp) + 8 (padding) = 30 bytes
-    my $header_size = 30;
+    # HP is the "telomere" - the file size minus the header
+    # Header: 4 (magic) + 2 (version) + 8 (checksum) + 4 (level) + 8 (xp) + 32 (quests) + 4 (padding) = 62 bytes
+    my $header_size = 62;
     my $hp = $file_size - $header_size;
 
     # Clamp HP to max for level (in case of corruption)
@@ -117,10 +120,14 @@ sub save {
     print $fh pack('Q', 0);
 
     # Write player data (level and xp)
-    print $fh pack('LL', $self->{level}, $self->{xp});
+    print $fh pack('LQ<', $self->{level}, $self->{xp});
 
-    # Padding to align (8 bytes)
-    print $fh pack('x8');
+    # Write quest slots (8 x u32 = 32 bytes)
+    my @quests = (0) x 8;  # Default: all empty
+    print $fh pack('L8', @quests);
+
+    # Padding to align (4 bytes)
+    print $fh pack('x4');
 
     # Write HP as "telomeres" - null bytes padding
     # This makes HP visible as file size!
@@ -194,7 +201,7 @@ sub xp_for_next_level {
     # L2->L3: 225 XP
     # L10->L11: 5766 XP
 
-    return int(100 * (1.5 ** $self->{level}));
+    return int(1000 * (2.0 ** $self->{level}));
 }
 
 1;

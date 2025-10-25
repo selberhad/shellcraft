@@ -17,12 +17,12 @@ The soul is a binary file that stores player state. The file size itself encodes
 | 0x04   | 2    | u16 LE    | version        | Format version number (currently 1) |
 | 0x06   | 8    | u64 LE    | checksum       | Reserved for future use (currently 0) |
 | 0x0E   | 4    | u32 LE    | level          | Player level (0-42) |
-| 0x12   | 4    | u32 LE    | xp             | Current experience points |
-| 0x16   | 32   | u32[8] LE | quest_slots    | Active quest IDs (0 = empty slot) |
-| 0x36   | N    | u8[]      | hp_telomere    | HP encoded as null bytes (0x00) |
+| 0x12   | 8    | u64 LE    | xp             | Current experience points |
+| 0x1A   | 32   | u32[8] LE | quest_slots    | Active quest IDs (0 = empty slot) |
+| 0x3E   | N    | u8[]      | hp_telomere    | HP encoded as null bytes (0x00) |
 
-**Total header size**: 54 bytes (0x36)
-**File size formula**: `54 + hp`
+**Total header size**: 62 bytes (0x3E)
+**File size formula**: `62 + hp`
 
 ## Field Details
 
