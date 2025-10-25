@@ -51,6 +51,17 @@ sub handle_combat {
             print "*** $enemy_name has been vanquished! ***\n";
             print "+${enemy_max_hp} XP\n";
             $player->add_xp($enemy_max_hp);
+
+            # Restore HP to full on victory
+            my $old_hp = $player->{hp};
+            my $max_hp = $player->max_hp();
+            $player->{hp} = $max_hp;
+
+            if ($old_hp < $max_hp) {
+                my $healed = $max_hp - $old_hp;
+                print "HP restored to full! (+$healed HP)\n";
+            }
+
             $player->save();
             return;
         }
