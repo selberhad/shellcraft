@@ -225,6 +225,12 @@ $game->start_fresh()
 - **internal/session/manager.go** - Thread-safe session tracking
 - **internal/docker/client.go** - Docker SDK wrapper
 
+### Quest System (Rust)
+- **rust-bins/quest/quests.txt** - Quest text data (simple key=value format)
+- **rust-bins/quest/src/quest_data.rs** - Zero-dependency parser (compile-time)
+- **rust-bins/quest/src/main.rs** - Quest journal and offering logic
+- **rust-bins/libsoul/src/lib.rs** - Soul.dat I/O library
+
 ### Tests
 - **test/GameTest.pm** - Fluent testing DSL
 - **test/run_tests.sh** - Test runner with volume mounts
@@ -278,6 +284,60 @@ $game->start_fresh()
    COPY --from=builder /build/rust-bins/target/release/mybinary /home/mybinary
    RUN chmod +x /home/mybinary
    ```
+
+### Add New Quest
+
+**Quest text is data-driven** - all quest content lives in `rust-bins/quest/quests.txt` using a simple custom format.
+
+1. Edit `rust-bins/quest/quests.txt`:
+   ```
+   %% QUEST 6
+   id=6
+   name=My New Quest
+   min_level=7
+   reward_xp=21000
+   offer_title=My New Quest
+   offer_narrative="""
+   This is the narrative shown when the quest
+   is first offered to the player.
+   Multi-line strings use triple quotes.
+   """
+   offer_objective=Do something cool
+   offer_reward=21000 XP
+   journal_description="""
+   This shows in the quest journal while active.
+   """
+   journal_objective=Optional objective hint
+   journal_reward=21000 XP
+   completion_message=Optional completion message
+   ```
+
+2. Add quest constant to `rust-bins/quest/src/main.rs`:
+   ```rust
+   const QUEST_MY_NEW_QUEST: u32 = 6;
+   ```
+
+3. Add quest offer logic in `main()`:
+   ```rust
+   else if level >= 7 && !soul.has_quest(QUEST_MY_NEW_QUEST) {
+       offer_quest(&mut soul, QUEST_MY_NEW_QUEST, &quests);
+   }
+   ```
+
+4. If quest needs progress tracking, add to `check_quest_progress()`:
+   ```rust
+   QUEST_MY_NEW_QUEST => {
+       let is_complete = check_some_condition();
+       let msg = format!("Progress: {}/{}", current, total);
+       (is_complete, Some(msg))
+   }
+   ```
+
+5. Add Dungeon Master completion logic in `dungeon-master.pl` if needed
+
+6. Add quest test in `test/` directory
+
+**Note:** Quest text is parsed at compile-time via `include_str!()`, so no external dependencies or runtime file I/O. Format is simple key=value with `"""..."""` for multi-line strings.
 
 ### Modify soul.dat Format
 
