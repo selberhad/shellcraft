@@ -256,6 +256,36 @@ sub expect_level {
     return $self;
 }
 
+sub expect_hp {
+    my ($self, $expected) = @_;
+
+    $self->{assertions}++;
+    my $actual = $self->{player}{hp};
+
+    if ($actual == $expected) {
+        $self->log("✓ HP is $expected");
+    } else {
+        $self->fail("Expected HP $expected, got $actual");
+    }
+
+    return $self;
+}
+
+sub expect_max_hp {
+    my ($self, $expected) = @_;
+
+    $self->{assertions}++;
+    my $actual = $self->{player}->max_hp();
+
+    if ($actual == $expected) {
+        $self->log("✓ Max HP is $expected");
+    } else {
+        $self->fail("Expected max HP $expected, got $actual");
+    }
+
+    return $self;
+}
+
 sub expect_hp_at_least {
     my ($self, $min_hp) = @_;
 
@@ -282,6 +312,18 @@ sub expect_hp_at_most {
     } else {
         $self->fail("Expected HP <= $max_hp, got $actual");
     }
+
+    return $self;
+}
+
+sub damage_player {
+    my ($self, $amount) = @_;
+
+    my $old_hp = $self->{player}{hp};
+    $self->{player}->take_damage($amount);
+    my $new_hp = $self->{player}{hp};
+
+    $self->log("Player took $amount damage ($old_hp → $new_hp HP)");
 
     return $self;
 }
@@ -606,6 +648,17 @@ sub level_up_once {
     my $threshold = $self->{player}->xp_for_next_level();
     my $xp_needed = $threshold - $current_xp;
     return $self->add_xp($xp_needed);
+}
+
+# Level up to a specific level
+sub level_up_to {
+    my ($self, $target_level) = @_;
+
+    while ($self->{player}{level} < $target_level) {
+        $self->level_up_once();
+    }
+
+    return $self;
 }
 
 # Calculate nth fibonacci number

@@ -19,8 +19,8 @@ use Commands;
 #   dungeon-master --tick    # Explicit tick (for testing)
 
 # Configuration
-my $SOUL_PATH = '/home/soul.dat';
-my $SEWER_PATH = '/sewer';
+my $SOUL_PATH = $ENV{SOUL_PATH_OVERRIDE} || '/home/soul.dat';
+my $SEWER_PATH = $ENV{SEWER_PATH_OVERRIDE} || '/sewer';
 my $RAT_REPOP_CHANCE = 0.25;  # 25% chance per tick
 my $MAX_RATS = 5;
 
@@ -49,6 +49,9 @@ sub main {
     # Load player soul AFTER transformations (so quest checks see current state)
     my $player = Player->load_or_create($SOUL_PATH);
 
+    # Restore HP to full
+    restore_hp($player);
+
     # Check quest completions and award XP
     check_quests($player);
 
@@ -56,6 +59,23 @@ sub main {
     repopulate_rats();
 
     # Future: other DM activities (environmental effects, random events, etc.)
+}
+
+sub restore_hp {
+    my ($player) = @_;
+
+    my $max_hp = $player->max_hp();
+    my $saved = 0;
+
+    if ($player->{hp} < $max_hp) {
+        $player->{hp} = $max_hp;
+        $saved = 1;
+    }
+
+    # Save if HP was restored
+    if ($saved) {
+        $player->save($SOUL_PATH);
+    }
 }
 
 sub check_quests {
