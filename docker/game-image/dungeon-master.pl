@@ -65,16 +65,21 @@ sub restore_hp {
     my ($player) = @_;
 
     my $max_hp = $player->max_hp();
-    my $saved = 0;
+    my $current_hp = $player->{hp};
 
-    if ($player->{hp} < $max_hp) {
+    # Debug logging
+    open my $log, '>>', '/tmp/dm_heal.log';
+    print $log scalar(localtime) . " - HP: $current_hp/$max_hp, Level: " . $player->{level} . "\n";
+    close $log;
+
+    if ($current_hp < $max_hp) {
         $player->{hp} = $max_hp;
-        $saved = 1;
-    }
-
-    # Save if HP was restored
-    if ($saved) {
         $player->save($SOUL_PATH);
+
+        # Log successful heal
+        open $log, '>>', '/tmp/dm_heal.log';
+        print $log "  -> HEALED from $current_hp to $max_hp\n";
+        close $log;
     }
 }
 
