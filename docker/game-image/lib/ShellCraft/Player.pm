@@ -75,6 +75,7 @@ sub load {
     seek($fh, 8, 1);
 
     # Read level (4 bytes)
+    my $data;
     read($fh, $data, 4);
     my $level = unpack('L<', $data);
 
