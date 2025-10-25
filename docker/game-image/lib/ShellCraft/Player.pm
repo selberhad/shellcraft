@@ -126,9 +126,6 @@ sub save {
     my @quests = (0) x 8;  # Default: all empty
     print $fh pack('L8', @quests);
 
-    # Padding to align (4 bytes)
-    print $fh pack('x4');
-
     # Write HP as "telomeres" - null bytes padding
     # This makes HP visible as file size!
     my $hp = $self->{hp} || 0;

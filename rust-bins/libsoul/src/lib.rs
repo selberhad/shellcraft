@@ -8,12 +8,12 @@
 //! - Version: u16 LE (2 bytes)
 //! - Checksum: u64 LE (8 bytes, currently unused)
 //! - Level: u32 LE (4 bytes)
-//! - XP: u32 LE (4 bytes)
+//! - XP: u64 LE (8 bytes)
 //! - Quest slots: [u32; 8] LE (32 bytes)
 //! - HP telomere: null bytes (variable length)
 //!
-//! Total header: 54 bytes
-//! File size = 54 + HP
+//! Total header: 58 bytes
+//! File size = 58 + HP
 
 use std::fs::File;
 use std::io::{self, Read, Seek, SeekFrom, Write};
@@ -26,7 +26,7 @@ pub const MAGIC: &[u8; 4] = b"SHC!";
 pub const VERSION: u16 = 1;
 
 /// Size of the fixed header (everything except HP telomere)
-pub const HEADER_SIZE: u64 = 62;
+pub const HEADER_SIZE: u64 = 58;
 
 /// Maximum player level
 pub const MAX_LEVEL: u32 = 42;
@@ -75,9 +75,28 @@ impl Soul {
 
     /// Calculate XP required for next level
     ///
-    /// Formula: 1000 * (2.0 ^ level)
+    /// Formula: fibonacci(level + 2) * 1000
     pub fn xp_for_next_level(&self) -> u64 {
-        (1000.0 * 2.0_f64.powi(self.level as i32)) as u64
+        Self::fibonacci(self.level + 2) * 1000
+    }
+
+    /// Calculate nth Fibonacci number
+    fn fibonacci(n: u32) -> u64 {
+        if n == 0 {
+            return 0;
+        }
+        if n == 1 || n == 2 {
+            return 1;
+        }
+
+        let mut a: u64 = 1;
+        let mut b: u64 = 1;
+        for _ in 3..=n {
+            let temp = a + b;
+            a = b;
+            b = temp;
+        }
+        b
     }
 
     /// Get number of quest slots unlocked at this level
@@ -252,9 +271,6 @@ impl Soul {
         for quest in &self.quests {
             file.write_all(&quest.to_le_bytes())?;
         }
-
-        // Write padding
-        file.write_all(&[0u8; 4])?;
 
         // Write HP telomere (null bytes)
         let hp_padding = vec![0u8; self.hp as usize];

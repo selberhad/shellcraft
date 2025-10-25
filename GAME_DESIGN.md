@@ -14,7 +14,7 @@ This document covers the implemented game design decisions that make ShellCraft 
 - **File size = HP** - Your savefile's size IS your health (the "telomere" mechanic)
 
 ### 1.2 Meaningful Danger
-- **Permadeath** - Your spellbook.dat gets deleted when you die
+- **Permadeath** - Your soul.dat gets deleted when you die
 - **Strategic combat** - Can't just spam attacks; enemies hit back
 - **Risk/reward grinding** - Bigger enemies give more XP but deal more damage
 
@@ -87,7 +87,7 @@ damage = 10 + (enemy_max_hp / 50)
 
 When player HP reaches 0:
 1. Dramatic death screen displayed
-2. `spellbook.dat` is **deleted** (telomeres destroyed!)
+2. `soul.dat` is **deleted** (telomeres destroyed!)
 3. Game exits immediately
 
 **Design Rationale:**
@@ -101,13 +101,13 @@ When player HP reaches 0:
 
 ### 3.1 The Telomere Concept
 
-Player HP is stored as **null-byte padding** at the end of `spellbook.dat`:
+Player HP is stored as **null-byte padding** at the end of `soul.dat`:
 
 ```
-spellbook.dat structure:
-[30 bytes: header] [X bytes: HP as 0-padding]
+soul.dat structure:
+[62 bytes: header] [X bytes: HP as 0-padding]
 
-File size = 30 + HP
+File size = 62 + HP
 ```
 
 **Design Rationale:**
@@ -311,7 +311,7 @@ Even non-combat commands matter:
 **Status monitoring:**
 ```bash
 status              # Check HP before fighting
-ls -l /home         # See spellbook.dat size (header + HP)
+ls -l /home         # See soul.dat size (header + HP)
 ```
 
 **World exploration:**

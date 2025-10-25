@@ -14,7 +14,7 @@ Built with **TDD-first methodology** following principles from `LEXICON.md`.
 - **RPG Progression**: Level 0-20 with XP-based advancement
 - **Command Unlocking**: Start with basic commands, unlock advanced tools as you level
 - **Combat System**: Fight file-based enemies (rats in `/sewer`, daemons in `/crypt`)
-- **Binary Savefiles**: Progress saved in `spellbook.dat` with magic bytes "SHC!"
+- **Binary Savefiles**: Progress saved in `soul.dat` with magic bytes "SHC!"
 - **Fantasy Theme**: Commands become "spells", arguments are "mana", pipes are "spell combinations"
 
 ### Server Infrastructure
@@ -152,7 +152,7 @@ Damage formula: `20 * log2(level + 2)` bytes per attack
 
 ### World Locations
 
-- `/home` - Your base, contains `spellbook.dat`
+- `/home` - Your base, contains `soul.dat`
 - `/sewer` - 5 rats for early leveling
 - `/crypt` - Tougher enemies with more XP
 - `/tower` - Riddles and puzzles (coming soon)

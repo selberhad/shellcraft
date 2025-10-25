@@ -105,7 +105,7 @@ The player’s environment is a **fake filesystem**, representing different zone
 
 | Directory | Description |
 |------------|-------------|
-| `/home` | Player home, containing `spellbook.dat` (savefile). |
+| `/home` | Player home, containing `soul.dat` (savefile). |
 | `/sewer` | Early-game rat grinding area. Contains `.rat` files. |
 | `/crypt` | Mid-game challenge area with encrypted `.elf` files. |
 | `/tower` | Late-game environment for advanced text puzzles. |
@@ -116,10 +116,10 @@ The player’s environment is a **fake filesystem**, representing different zone
 
 ## 7. Save System
 
-### 7.1 File Format: `spellbook.dat`
+### 7.1 File Format: `soul.dat`
 
-Binary savefile representing player progress.  
-Stored in the player’s `/home` directory.
+Binary savefile representing player progress.
+Stored in the player's `/home` directory.
 
 | Offset | Field | Description |
 |---------|--------|-------------|
@@ -134,7 +134,7 @@ Stored in the player’s `/home` directory.
 ### 7.2 Encoding
 - Endianness may vary per version.  
 - All values XORed with player-specific salt derived from username.  
-- “Corrupted” saves can still be partially read via `strings spellbook.dat`.
+- "Corrupted" saves can still be partially read via `strings soul.dat`.
 
 ---
 

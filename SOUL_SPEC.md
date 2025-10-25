@@ -19,10 +19,10 @@ The soul is a binary file that stores player state. The file size itself encodes
 | 0x0E   | 4    | u32 LE    | level          | Player level (0-42) |
 | 0x12   | 8    | u64 LE    | xp             | Current experience points |
 | 0x1A   | 32   | u32[8] LE | quest_slots    | Active quest IDs (0 = empty slot) |
-| 0x3E   | N    | u8[]      | hp_telomere    | HP encoded as null bytes (0x00) |
+| 0x3A   | N    | u8[]      | hp_telomere    | HP encoded as null bytes (0x00) |
 
-**Total header size**: 62 bytes (0x3E)
-**File size formula**: `62 + hp`
+**Total header size**: 58 bytes (0x3A)
+**File size formula**: `58 + hp`
 
 ## Field Details
 
@@ -47,13 +47,15 @@ The soul is a binary file that stores player state. The file size itself encodes
 - **Purpose**: Player's current level
 - **Notes**: Level determines command unlocks and max HP
 
-### XP (0x12-0x15)
+### XP (0x12-0x19)
 - **Type**: 64-bit unsigned integer, little-endian
-- **Range**: 0 to 2^64-1
+- **Size**: 8 bytes
+- **Range**: 0 to 2^64-1 (~18 quintillion)
 - **Purpose**: Current experience points
 - **Formula**: Next level requires `fibonacci(level + 2) * 1000` XP
+- **Notes**: u64 required - cumulative XP to L42 is ~1.1 trillion, exceeds u32 max
 
-### Quest Slots (0x16-0x35)
+### Quest Slots (0x1A-0x39)
 - **Type**: Array of 8 u32 LE integers
 - **Size**: 32 bytes total (8 slots × 4 bytes)
 - **Values**:
@@ -65,12 +67,12 @@ The soul is a binary file that stores player state. The file size itself encodes
   - Gain 1 slot every 6 levels
   - Max 8 slots at level 42
 
-### HP Telomere (0x36 to EOF)
+### HP Telomere (0x3A to EOF)
 - **Type**: Sequence of null bytes (0x00)
 - **Size**: Variable (equals current HP)
 - **Purpose**: HP encoded as file size
 - **Formula**:
-  - Current HP = `file_size - 54`
+  - Current HP = `file_size - 58`
   - Max HP = `100 + (level * 20)`
 - **Design**:
   - Inspired by biological telomeres

@@ -1,4 +1,4 @@
-FROM alpine:3.19 AS builder
+FROM alpine:3.20 AS builder
 
 # Install Rust toolchain and build dependencies
 RUN apk add --no-cache \
@@ -6,15 +6,15 @@ RUN apk add --no-cache \
     rust \
     musl-dev
 
-# Copy Rust workspace
-COPY ../../rust-bins /build/rust-bins
+# Copy Rust workspace (build context is repo root)
+COPY rust-bins /build/rust-bins
 WORKDIR /build/rust-bins
 
 # Build all binaries in release mode (statically linked)
 RUN cargo build --release
 
 # Runtime stage
-FROM alpine:3.19
+FROM alpine:3.20
 
 # Install Perl and essential GNU tools
 RUN apk add --no-cache \
@@ -39,11 +39,11 @@ RUN mkdir -p \
 # Copy Rust binaries from builder
 COPY --from=builder /build/rust-bins/target/release/quest /home/quest
 
-# Copy game shell and libraries
-COPY shellcraft.pl /usr/local/bin/shellcraft.pl
-COPY lib/ShellCraft/ /usr/local/lib/shellcraft/
-COPY init/welcome.txt /etc/shellcraft/welcome.txt
-COPY init/populate-world.sh /tmp/populate-world.sh
+# Copy game shell and libraries (build context is repo root)
+COPY docker/game-image/shellcraft.pl /usr/local/bin/shellcraft.pl
+COPY docker/game-image/lib/ShellCraft/ /usr/local/lib/shellcraft/
+COPY docker/game-image/init/welcome.txt /etc/shellcraft/welcome.txt
+COPY docker/game-image/init/populate-world.sh /tmp/populate-world.sh
 
 # Make shell and binaries executable, populate world
 RUN chmod +x /usr/local/bin/shellcraft.pl && \

@@ -39,3 +39,10 @@ Thumbs.db
 # Temporary files
 tmp/
 temp/
+
+# Rust build artifacts
+rust-bins/target/
+rust-bins/**/target/
+*.rlib
+*.rmeta
+*.o
