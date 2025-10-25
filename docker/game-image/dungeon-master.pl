@@ -185,8 +185,9 @@ sub spawn_rat {
 
     close $fh;
 
-    # Make rat file world-writable so player can delete it
-    # DM runs as root, player runs as 'player' user
+    # Change ownership to player user so they can delete it
+    # DM runs as root, player runs as 'player' user (UID 1000)
+    chown 1000, 1000, $rat_file;
     chmod 0666, $rat_file;
 }
 

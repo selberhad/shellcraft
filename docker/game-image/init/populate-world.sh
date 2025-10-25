@@ -6,7 +6,8 @@ mkdir -p /sewer
 for i in 1 2 3 4 5; do
     # Create rat files with random data (100-500 bytes)
     dd if=/dev/urandom of=/sewer/rat_$i.rat bs=1 count=$((100 + RANDOM % 400)) 2>/dev/null
-    # Make rats deletable by player user
+    # Make rats owned by player user (UID 1000) so they can delete them
+    chown 1000:1000 /sewer/rat_$i.rat
     chmod 666 /sewer/rat_$i.rat
 done
 
