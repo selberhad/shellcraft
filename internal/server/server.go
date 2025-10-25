@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/docker/docker/api/types/container"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/shellcraft/server/internal/docker"
@@ -122,8 +123,13 @@ func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
 	// Create session
 	sessionID := s.sessionManager.NewSession()
 
-	// Create container (but don't start yet - wait for WebSocket connection)
-	containerID, err := s.dockerClient.CreateContainer(ctx, imageName, nil)
+	// Create container with shellcraft label for cleanup tracking
+	config := &container.Config{
+		Image:  imageName,
+		Tty:    true,
+		Labels: map[string]string{"app": "shellcraft"},
+	}
+	containerID, err := s.dockerClient.CreateContainer(ctx, imageName, config)
 	if err != nil {
 		http.Error(w, "Failed to create container", http.StatusInternalServerError)
 		log.Printf("Failed to create container: %v", err)

@@ -144,3 +144,17 @@ func (m *Manager) SetLastActivity(sessionID string, t time.Time) {
 		session.LastActivity = t
 	}
 }
+
+// HasContainer checks if a container ID is tracked by any session
+func (m *Manager) HasContainer(containerID string) bool {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	for _, session := range m.sessions {
+		if session.ContainerID == containerID {
+			return true
+		}
+	}
+
+	return false
+}
