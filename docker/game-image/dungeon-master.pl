@@ -160,6 +160,53 @@ sub spawn_rat {
     close $fh;
 }
 
+# Create symlink maze structure in under_nix
+# Maze has circular/confusing symlinks for L4 discovery
+# Solvable path for L6 with ls -l
+sub create_symlink_maze {
+    my ($base_path) = @_;
+
+    # Create rooms for the maze
+    mkdir "$base_path/entrance", 0755;
+    mkdir "$base_path/left_path", 0755;
+    mkdir "$base_path/right_path", 0755;
+    mkdir "$base_path/center_hall", 0755;
+    mkdir "$base_path/dead_end", 0755;
+    mkdir "$base_path/treasure_room", 0755;
+
+    # Create symlinks - some circular, some pointing to solution
+    # Entrance has three choices
+    symlink '../left_path', "$base_path/entrance/left";
+    symlink '../right_path', "$base_path/entrance/right";
+    symlink '../center_hall', "$base_path/entrance/forward";
+
+    # Left path is a dead end with circular link
+    symlink '../entrance', "$base_path/left_path/back";
+    symlink '../left_path', "$base_path/left_path/forward";  # Circular!
+
+    # Right path also circular
+    symlink '../entrance', "$base_path/right_path/back";
+    symlink '../dead_end', "$base_path/right_path/forward";
+
+    # Dead end loops back
+    symlink '../right_path', "$base_path/dead_end/back";
+    symlink '../dead_end', "$base_path/dead_end/forward";  # Circular!
+
+    # Center hall is the CORRECT path to treasure
+    symlink '../entrance', "$base_path/center_hall/back";
+    symlink '../treasure_room', "$base_path/center_hall/forward";  # Solution!
+
+    # Treasure room - final destination
+    symlink '../center_hall', "$base_path/treasure_room/back";
+
+    # Place treasure file
+    open my $fh, '>', "$base_path/treasure_room/treasure" or return;
+    print $fh "Congratulations! You have navigated the maze.\n\n";
+    print $fh "You found the treasure hidden in Under-Nix.\n";
+    print $fh "The Wyrm's labyrinth has been conquered.\n";
+    close $fh;
+}
+
 # L3 Quest: Door Transformation
 # Check if player has created a key file in .crack/
 # If so, transform locked_door into under_nix/ directory
@@ -177,10 +224,8 @@ sub check_door_transformation {
         # Create under_nix directory
         mkdir $under_nix_path, 0755;
 
-        # Create a simple symlink maze structure inside under_nix
-        # This will be expanded in later phases for L4-L6 quests
-        mkdir "$under_nix_path/room1", 0755;
-        mkdir "$under_nix_path/room2", 0755;
+        # Create symlink maze structure (L4-L6 quests)
+        create_symlink_maze($under_nix_path);
 
         # Add a welcome message
         open my $fh, '>', "$under_nix_path/README.txt" or return;
