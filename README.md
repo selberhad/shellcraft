@@ -13,11 +13,13 @@ Built with **TDD-first methodology** following principles from `LEXICON.md`.
 ### Complete Game System
 - **RPG Progression**: Level 0-42 with XP-based advancement (fibonacci scaling)
 - **Command Unlocking**: Start with basic commands, unlock advanced tools as you level
-- **Combat System**: Fight file-based enemies (rats in `/sewer`, daemons in `/crypt`)
-- **Quest System**: Accept quests, complete objectives, earn XP rewards
-- **Dynamic World**: Dungeon Master cron process respawns monsters and manages quests
+- **Combat System**: Turn-based file combat (file size = HP, truncate = damage)
+- **Quest System**: Rust-powered `/home/quest` binary with data-driven quest text
+- **Dynamic World**: Dungeon Master (root cron) respawns monsters, checks quest completion
+- **Symlink Maze**: Multi-room labyrinth with circular traps (L4-L6 quests)
 - **Binary Savefiles**: Progress saved in `soul.dat` with magic bytes "SHC!"
-- **Fantasy Theme**: Commands become "spells", arguments are "mana", pipes are "spell combinations"
+- **Permadeath**: soul.dat deletion on death (real consequences!)
+- **Fantasy Theme**: Year 2600 posthuman consciousness, filesystem as reality
 
 ### Server Infrastructure
 - **Web Terminal**: Beautiful xterm.js interface with retro green aesthetic
@@ -42,10 +44,11 @@ Built with **TDD-first methodology** following principles from `LEXICON.md`.
 ### Components
 
 **Frontend**
-- TypeScript + xterm.js terminal interface
+- xterm.js terminal interface
 - WebSocket connection to backend
 - Auto-reconnection with 5 retry attempts
 - Responsive terminal sizing
+- Subpath deployment support (works behind reverse proxies)
 
 **Backend (Go 1.21+)**
 - `chi` router for REST API
@@ -53,13 +56,16 @@ Built with **TDD-first methodology** following principles from `LEXICON.md`.
 - Docker SDK for container management
 - Thread-safe session manager
 - Background cleanup goroutine
+- Session metrics endpoint
 
-**Game Container (Alpine + Perl)**
-- Perl 5.38 REPL game loop
-- Pre-populated world with enemies and lore
-- Command validation and unlock system
-- Binary savefile I/O
-- File-based combat mechanics
+**Game Container (Alpine)**
+- **Perl game shell** - Main REPL, command validation, combat system
+- **Rust binaries** - Quest system (`/home/quest`), soul.dat I/O library
+- **Dungeon Master** - Root cron process for quest completion, world events
+- Pre-populated world with enemies (/sewer, /crypt, /tower)
+- Binary savefile (soul.dat) with magic bytes
+- File-based combat (file size = HP)
+- Progressive command unlocking (L0-L42)
 
 ---
 
