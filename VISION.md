@@ -295,34 +295,9 @@ HACK THE PLANET
 
 ---
 
-## 6. Audio & Sensory Design
+## 6. Design Philosophy
 
-### 6.1 Sound Aesthetic (Optional/Future)
-
-**Retro Computing Sounds:**
-- Mechanical keyboard clicks
-- Disk drive whirring
-- Modem handshake tones (2600hz phreaking reference)
-- Static/white noise for `/dev/null`
-
-**Combat Sounds:**
-- File truncation: hard drive seek sounds
-- File deletion: satisfying "chunk" noise
-- Damage taken: error beep, corrupted audio glitch
-
-### 6.2 Haptic Feedback (Web Terminal)
-
-**Visual Cues:**
-- Screen flicker on low HP
-- Scan lines for retro CRT effect
-- Color shift (green → red) as HP drops
-- Text glitches when damaged
-
----
-
-## 7. Design Philosophy
-
-### 7.1 Vibecoding Principles
+### 6.1 Vibecoding Principles
 
 **What is vibecoding?**
 Building for *feel* and *aesthetic* first, optimization second. The goal is to create an **experience**, not just a functional game.
@@ -333,7 +308,7 @@ Building for *feel* and *aesthetic* first, optimization second. The goal is to c
 - Permadeath *feels* meaningful and dramatic
 - Leveling *feels* like genuine mastery
 
-### 7.2 Educational Without Being Didactic
+### 6.2 Educational Without Being Didactic
 
 **Bad:**
 > "The `grep` command searches for patterns in text. Syntax: grep [pattern] [file]"
@@ -350,7 +325,7 @@ Building for *feel* and *aesthetic* first, optimization second. The goal is to c
 - Teach through restrictions (can't use X until you've earned it)
 - Mistakes are part of the lore ("The spell fizzles...")
 
-### 7.3 Constraints as Features
+### 6.3 Constraints as Features
 
 **The Great Editor Wars (Historical Canon):**
 
@@ -378,44 +353,7 @@ This is not a punishment. This is the way.
 
 ---
 
-## 8. Implementation Guidelines
-
-### 8.1 Code Style
-
-**In-Character Comments:**
-```perl
-# The soul must be preserved across the void
-sub save_soul {
-    my $self = shift;
-    # Telomeres encode as null bytes (the void's touch)
-    my $padding = "\0" x $self->{hp};
-    # ...
-}
-```
-
-**Variable Naming:**
-```perl
-# Good (thematic)
-my $telomeres = $soul_size - $header_size;
-my $incantation = parse_command($input);
-
-# Bad (too mundane)
-my $padding = $file_size - $offset;
-my $cmd = parse($input);
-```
-
-### 8.2 Error Messages
-
-**Always in-character:**
-- ✅ "The path eludes you. No such directory exists in this realm."
-- ✅ "Permission denied. The Kernel forbids such audacity."
-- ✅ "Your mana is insufficient. (Command not unlocked)"
-- ✅ "That editor was banned in the Accord of sed. Use stream editing."
-- ✅ "The vi monks and emacs zealots destroyed each other over that command."
-- ❌ "bash: command not found"
-- ❌ "Error: Invalid argument"
-
-### 8.3 Quest Design
+## 7. Quest Design
 
 **CTF-Style Challenges:**
 - Find hidden `.dotfiles`
@@ -432,9 +370,9 @@ my $cmd = parse($input);
 
 ---
 
-## 9. Hackathon Presentation
+## 8. Hackathon Presentation
 
-### 9.1 Demo Script
+### 8.1 Demo Script
 
 **Opening (30 seconds):**
 ```
@@ -448,7 +386,7 @@ Your HP is literally the size of your savefile.
 Death deletes soul.dat. Permadeath is permanent.
 ```
 
-### 9.2 Pitch Highlights
+### 8.2 Pitch Highlights
 
 **Fantasy OS Theme Alignment:**
 - ✅ Filesystem as fantasy world
@@ -470,41 +408,7 @@ Death deletes soul.dat. Permadeath is permanent.
 
 ---
 
-## 10. Future Vision
-
-### 10.1 Post-Hackathon Extensions
-
-**Multiplayer Elements:**
-- Shared world state (limited resources)
-- Leaderboard (speedruns, highest level)
-- Player ghosts (see where others died)
-- Cooperative quests
-
-**Expanded Lore:**
-- More scrolls (Jargon File, TAO of Programming)
-- Hidden ARG elements (external websites, real phone numbers?)
-- Episodic content (new quests each month)
-
-**Technical Depth:**
-- More quest types (boss fights, puzzles, CTF challenges)
-- Procedural generation (randomized enemies, loot)
-- Achievement system ("First Blood", "Deathless Run", "Speedrun Master")
-
-### 10.2 Community & Longevity
-
-**Open Source:**
-- MIT license (like UNIX itself)
-- Encourage modding (custom quests, new zones)
-- Player-created content (share soul.dat files, speedrun routes)
-
-**Educational Use:**
-- Classroom tool for teaching UNIX
-- CTF training platform
-- Onboarding for new developers
-
----
-
-## 11. The Vibe™
+## 9. The Vibe™
 
 **TL;DR - What is ShellCraft's vibe?**
 
