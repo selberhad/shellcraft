@@ -90,18 +90,25 @@ sub handle_combat {
 sub calc_player_damage {
     my ($level) = @_;
 
-    # Formula: base_damage * log2(level + 2)
-    # This keeps damage scaling reasonable:
-    # L0:  20 bytes
-    # L1:  32 bytes
-    # L5:  56 bytes
-    # L10: 72 bytes
-    # L20: 92 bytes
+    # Formula: Roll 10 dice, each with <base_damage> sides
+    # Base damage scales with level using log2:
+    # L0:  10d20 (avg 105, range 10-200)
+    # L1:  10d32 (avg 165, range 10-320)
+    # L5:  10d56 (avg 285, range 10-560)
+    # L10: 10d72 (avg 365, range 10-720)
+    # L20: 10d92 (avg 465, range 10-920)
 
     my $base_damage = 20;
     my $scaling = log($level + 2) / log(2);
+    my $die_size = int($base_damage * $scaling);
 
-    return int($base_damage * $scaling);
+    # Roll 10 dice with $die_size sides each
+    my $total_damage = 0;
+    for (1..10) {
+        $total_damage += 1 + int(rand($die_size));
+    }
+
+    return $total_damage;
 }
 
 # Calculate enemy damage based on enemy max HP (difficulty)
