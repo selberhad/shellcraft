@@ -10,7 +10,9 @@ RUN apk add --no-cache \
 COPY rust-bins /build/rust-bins
 WORKDIR /build/rust-bins
 
-# Build all binaries in release mode (statically linked)
+# Build all binaries in release mode (fully statically linked)
+# Set RUSTFLAGS to statically link libgcc and use musl
+ENV RUSTFLAGS="-C target-feature=+crt-static"
 RUN cargo build --release
 
 # Runtime stage
