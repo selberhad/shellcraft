@@ -55,8 +55,9 @@ const terminalHTML = `<!DOCTYPE html>
         const sessionId = '{{.SessionID}}';
         const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         // Extract base path from current URL (e.g., "/shellcraft" or "")
+        // Skip if path starts with /session (that's our own path, not a base)
         const pathParts = window.location.pathname.split('/');
-        const basePath = pathParts.length > 3 ? '/' + pathParts[1] : '';
+        const basePath = (pathParts.length > 3 && pathParts[1] !== 'session') ? '/' + pathParts[1] : '';
         const wsUrl = wsProtocol + '//' + window.location.host + basePath + '/session/' + sessionId + '/ws';
 
         // Initialize terminal
