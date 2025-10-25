@@ -8,13 +8,22 @@
 
 | Level | Unlock | Pedagogical Goal | Related Quest |
 |-------|---------|------------------|---------------|
-| 0 | `ls`, `cat`, `echo`, `rm`, `cd`, `pwd`, `whoami` | **Navigation & observation** - Learn to explore filesystem, view files, understand location | **"Awakening"** - Explore `/home`, discover `soul.dat`, find `/sewer` |
-| 1 | `ls -l` | **File metadata** - Understand permissions, sizes, timestamps; recognize enemies by size | **"Sewer Cleanse"** - Use `ls -l` to identify rat HP before combat |
-| 2 | `mkdir` | **Filesystem manipulation** - Create structure, organize space | **"The Safe House"** - Create `/home/cache` to store quest items |
-| 3 | `rmdir` | **Directory management** - Clean up, understand empty vs. occupied | **"Spring Cleaning"** - Remove abandoned directories in `/tmp` |
-| 4 | `touch` | **File creation** - Generate new entities, understand file existence | **"The Sigil"** - Create marker files to track quest progress |
-| 5 | `mv` | **File organization** - Reorganize, rename, archive | **"The Relocation"** - Move quest items to proper locations |
-| 6 | `cp` | **Duplication & backup** - Preserve data, create copies | **"The Backup"** - Copy important scrolls before risky operations |
+| 0 | `ls`, `cat`, `echo`, `rm`, `cd`, `pwd`, `whoami` | **Navigation & observation** - Learn to explore filesystem, view files, understand location. Try all commands, then run `./quest` to get started. | *(Tutorial/onboarding - no quest)* |
+| 1 | `ls -s` | **File sizes** - See file sizes in blocks; recognize enemies by size (file size = HP) | **"Sewer Cleanse"** (already implemented) - Use `ls -s` to scout rat HP before fighting |
+| 2 | `ls -a` | **Hidden files** - Discover dotfiles and hidden directories | **"The Crack"** - Find hidden `/sewer/.crack/` directory |
+| 3 | `touch` | **File creation** - Create files to solve puzzles | **"The Locked Door"** - In `.crack/`, find `locked_door` file. Create `key` file with `touch`, DM transforms door into directory portal to Under-Nix |
+| 4 | `ls -R` | **Recursive listing** - Explore directory trees (and learn Ctrl+C when it hangs on circular symlinks) | **"The Symlink Maze"** - Enter Under-Nix, try `ls -R`, watch it hang on circular symlinks, realize you need better tools to navigate this |
+| 5 | `ln -s` | **Symbolic links** - Create shortcuts/portals between directories | **"The Portal Home"** - Create symlink from `/home` to Under-Nix entrance for quick access (learning what symlinks are by making one) |
+| 6 | `ls -l` | **File metadata** - Understand permissions, timestamps, and crucially: see where symlinks point (`->`) | **"Navigate the Maze"** - Use `ls -l` in Under-Nix to trace symlink targets and find the way through |
+
+---
+
+## Progression Strategy (L7-L42)
+
+### L7-L20: Core UNIX Tools
+
+| Level | Unlock | Pedagogical Goal | Related Quest |
+|-------|---------|------------------|---------------|
 | 7 | `grep` | **Text searching** - Find patterns, extract information | **"The Hidden Message"** - Extract secrets from `/etc/scrolls` |
 | 8 | `sort` | **Text processing** - Organize data, understand ordering | **"The Census"** - Sort process list by PID |
 | 9 | `uniq` | **Data deduplication** - Identify unique entries, filter | **"The Unique Paths"** - Find distinct daemon types |
@@ -29,11 +38,8 @@
 | 18 | `kill` | **Process management** - Terminate programs, send signals | **"The Daemon Hunt"** - Kill rogue background processes |
 | 19 | `tar` | **Archiving** - Bundle files, compress data | **"The Archive"** - Extract ancient compressed lore |
 | 20 | `perl -e` (one-liners only) | **Scripting basics** - Automation, text manipulation | **"The Perl Sage"** - Unlock Larry Wall's teachings |
-| 21-42 | **(To be designed)** | **Systems mastery** - Complex pipelines, advanced techniques | **"Ascension Protocol"** (L42 final quest) |
 
----
-
-## Progression Strategy (L20-L42)
+### L21-L42: Advanced Mastery
 
 The remaining 22 levels progressively unlock advanced functionality:
 
