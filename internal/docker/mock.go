@@ -50,18 +50,6 @@ func (m *MockClient) ListImages(ctx context.Context) ([]string, error) {
 	return imageNames, nil
 }
 
-// ListContainers returns container IDs (mock ignores labels)
-func (m *MockClient) ListContainers(ctx context.Context, labels map[string]string) ([]string, error) {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-
-	var containerIDs []string
-	for id := range m.containers {
-		containerIDs = append(containerIDs, id)
-	}
-	return containerIDs, nil
-}
-
 // CreateContainer creates a new mock container
 func (m *MockClient) CreateContainer(ctx context.Context, imageName string, config *container.Config) (string, error) {
 	m.mu.Lock()

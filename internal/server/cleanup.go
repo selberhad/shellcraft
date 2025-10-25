@@ -60,26 +60,15 @@ func (s *Server) StopCleanup() {
 func (cm *CleanupManager) run() {
 	defer cm.wg.Done()
 
-	// Run zombie cleanup on startup
-	if err := cm.server.CleanupZombieContainers(); err != nil {
-		log.Printf("Initial zombie cleanup failed: %v", err)
-	}
-
 	for {
 		select {
 		case <-cm.done:
 			cm.ticker.Stop()
 			return
 		case <-cm.ticker.C:
-			// Clean up idle sessions
 			count := cm.server.CleanupIdleSessions(cm.idleTimeout)
 			if count > 0 {
 				log.Printf("Cleaned up %d idle sessions", count)
-			}
-
-			// Clean up zombie containers
-			if err := cm.server.CleanupZombieContainers(); err != nil {
-				log.Printf("Zombie cleanup failed: %v", err)
 			}
 		}
 	}
@@ -119,38 +108,10 @@ func (s *Server) CleanupIdleSessions(idleTimeout time.Duration) int {
 }
 
 // CleanupZombieContainers removes containers that exist in Docker but not in session manager
-// This can happen after a server restart or disconnected WebSockets
+// This can happen after a server restart
 func (s *Server) CleanupZombieContainers() error {
-	ctx := context.Background()
-
-	// List all containers with shellcraft label
-	containers, err := s.dockerClient.ListContainers(ctx, map[string]string{
-		"app": "shellcraft",
-	})
-	if err != nil {
-		return err
-	}
-
-	count := 0
-	for _, containerID := range containers {
-		// Check if container is tracked in session manager
-		if !s.sessionManager.HasContainer(containerID) {
-			log.Printf("Found zombie container %s, removing...", containerID)
-
-			if err := s.dockerClient.StopContainer(ctx, containerID); err != nil {
-				log.Printf("Failed to stop zombie container %s: %v", containerID, err)
-			}
-			if err := s.dockerClient.RemoveContainer(ctx, containerID); err != nil {
-				log.Printf("Failed to remove zombie container %s: %v", containerID, err)
-			} else {
-				count++
-			}
-		}
-	}
-
-	if count > 0 {
-		log.Printf("Cleaned up %d zombie containers", count)
-	}
-
+	// TODO: Implement by listing all containers with a specific label
+	// and removing those not in the session manager
+	log.Println("Zombie container cleanup not yet implemented")
 	return nil
 }

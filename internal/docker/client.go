@@ -5,7 +5,6 @@ import (
 	"io"
 
 	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 )
@@ -20,7 +19,6 @@ type AttachResult struct {
 // Client is an interface for Docker operations
 type Client interface {
 	ListImages(ctx context.Context) ([]string, error)
-	ListContainers(ctx context.Context, labels map[string]string) ([]string, error)
 	CreateContainer(ctx context.Context, imageName string, config *container.Config) (string, error)
 	StartContainer(ctx context.Context, containerID string) error
 	StopContainer(ctx context.Context, containerID string) error
@@ -57,25 +55,6 @@ func (d *DockerClient) ListImages(ctx context.Context) ([]string, error) {
 		}
 	}
 	return imageNames, nil
-}
-
-// ListContainers returns container IDs filtered by labels
-func (d *DockerClient) ListContainers(ctx context.Context, labels map[string]string) ([]string, error) {
-	filters := container.ListOptions{All: true}
-	if len(labels) > 0 {
-		filters.Filters = filtersFromLabels(labels)
-	}
-
-	containers, err := d.cli.ContainerList(ctx, filters)
-	if err != nil {
-		return nil, err
-	}
-
-	var containerIDs []string
-	for _, cont := range containers {
-		containerIDs = append(containerIDs, cont.ID)
-	}
-	return containerIDs, nil
 }
 
 // CreateContainer creates a new container from an image with resource limits
@@ -176,13 +155,4 @@ func (d *DockerClient) AttachContainer(ctx context.Context, containerID string) 
 // Close closes the Docker client connection
 func (d *DockerClient) Close() error {
 	return d.cli.Close()
-}
-
-// filtersFromLabels creates a Docker filter from label map
-func filtersFromLabels(labels map[string]string) filters.Args {
-	f := filters.NewArgs()
-	for key, value := range labels {
-		f.Add("label", key+"="+value)
-	}
-	return f
 }
