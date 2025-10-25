@@ -132,6 +132,36 @@ sub fight {
     return $self;
 }
 
+# Add a quest to player
+sub add_quest {
+    my ($self, $quest_id) = @_;
+
+    my $success = $self->{player}->add_quest($quest_id);
+
+    if ($success) {
+        $self->log("Added quest $quest_id");
+    } else {
+        $self->log("Failed to add quest $quest_id (no slots or already active)");
+    }
+
+    return $self;
+}
+
+# Remove a quest from player
+sub remove_quest {
+    my ($self, $quest_id) = @_;
+
+    my $removed = $self->{player}->remove_quest($quest_id);
+
+    if ($removed) {
+        $self->log("Removed quest $quest_id");
+    } else {
+        $self->log("Quest $quest_id was not active");
+    }
+
+    return $self;
+}
+
 # Check if command is unlocked
 sub can_use {
     my ($self, $command) = @_;
@@ -238,6 +268,79 @@ sub expect_dead {
         $self->log("✓ Player is dead");
     } else {
         $self->fail("Expected player to be dead");
+    }
+
+    return $self;
+}
+
+sub expect_quest_active {
+    my ($self, $quest_id) = @_;
+
+    $self->{assertions}++;
+
+    if ($self->{player}->has_quest($quest_id)) {
+        $self->log("✓ Quest $quest_id is active");
+    } else {
+        $self->fail("Expected quest $quest_id to be active");
+    }
+
+    return $self;
+}
+
+sub expect_quest_not_active {
+    my ($self, $quest_id) = @_;
+
+    $self->{assertions}++;
+
+    if (!$self->{player}->has_quest($quest_id)) {
+        $self->log("✓ Quest $quest_id is not active");
+    } else {
+        $self->fail("Expected quest $quest_id to not be active");
+    }
+
+    return $self;
+}
+
+sub expect_quest_slots {
+    my ($self, $expected) = @_;
+
+    $self->{assertions}++;
+    my $actual = $self->{player}->unlocked_quest_slots();
+
+    if ($actual == $expected) {
+        $self->log("✓ Quest slots: $expected");
+    } else {
+        $self->fail("Expected $expected quest slots, got $actual");
+    }
+
+    return $self;
+}
+
+sub expect_xp {
+    my ($self, $expected) = @_;
+
+    $self->{assertions}++;
+    my $actual = $self->{player}{xp};
+
+    if ($actual == $expected) {
+        $self->log("✓ XP is $expected");
+    } else {
+        $self->fail("Expected XP $expected, got $actual");
+    }
+
+    return $self;
+}
+
+sub expect_xp_at_least {
+    my ($self, $min_xp) = @_;
+
+    $self->{assertions}++;
+    my $actual = $self->{player}{xp};
+
+    if ($actual >= $min_xp) {
+        $self->log("✓ XP $actual >= $min_xp");
+    } else {
+        $self->fail("Expected XP >= $min_xp, got $actual");
     }
 
     return $self;
