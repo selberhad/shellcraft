@@ -77,6 +77,7 @@ More powerful spells unlock as you gain experience.
 Type 'status' to see your progress.
 EOF
 
-# Make directories world-writable so player can delete enemy files
+# Make directories owned by player and world-writable so player can delete enemy files
+chown -R 1000:1000 /sewer /crypt /tower
 chmod -R 777 /sewer /crypt /tower
 chmod -R 755 /etc/scrolls

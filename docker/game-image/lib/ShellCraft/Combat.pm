@@ -48,7 +48,27 @@ sub handle_combat {
             # Enemy defeated!
             my $deleted = unlink $filepath;
             if (!$deleted) {
-                warn "WARNING: Failed to delete enemy file: $filepath (error: $!)\n";
+                # Get detailed permission info for debugging
+                my @stat = stat($filepath);
+                my $perms = $stat[2] ? sprintf("%04o", $stat[2] & 07777) : "unknown";
+                my $uid = $stat[4] // "unknown";
+                my $gid = $stat[5] // "unknown";
+                my $current_uid = $<;
+                my $current_gid = $(;
+
+                warn "WARNING: Failed to delete enemy file: $filepath\n";
+                warn "  Error: $!\n";
+                warn "  File perms: $perms, owner: $uid:$gid\n";
+                warn "  Current user: $current_uid:$current_gid\n";
+
+                # Check parent directory permissions
+                my $dir = $filepath;
+                $dir =~ s{/[^/]+$}{};
+                @stat = stat($dir);
+                my $dir_perms = $stat[2] ? sprintf("%04o", $stat[2] & 07777) : "unknown";
+                my $dir_uid = $stat[4] // "unknown";
+                my $dir_gid = $stat[5] // "unknown";
+                warn "  Dir perms: $dir_perms, owner: $dir_uid:$dir_gid\n";
             }
             print "\n";
             print "*** $enemy_name has been vanquished! ***\n";

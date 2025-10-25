@@ -58,8 +58,8 @@ RUN chmod +x /usr/local/bin/shellcraft.pl && \
     chmod +x /tmp/populate-world.sh && \
     /tmp/populate-world.sh && \
     rm /tmp/populate-world.sh && \
-    chown -R player:player /home && \
-    chmod 755 /sewer /crypt /tower /etc/scrolls
+    chown -R player:player /home
+    # Note: /sewer, /crypt, /tower permissions set by populate-world.sh
 
 # Set up root crontab for Dungeon Master (runs every minute)
 RUN echo "* * * * * /usr/sbin/dungeon-master >/dev/null 2>&1" | crontab -
