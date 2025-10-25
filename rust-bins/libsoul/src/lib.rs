@@ -242,14 +242,6 @@ impl Soul {
         // Write checksum (placeholder)
         file.write_all(&0u64.to_le_bytes())?;
 
-        // Write quest slots
-        for _ in 0..8 {
-            file.write_all(&0u32.to_le_bytes())?;
-        }
-
-        // Write padding
-        file.write_all(&[0u8; 4])?;
-
         // Write level
         file.write_all(&self.level.to_le_bytes())?;
 
@@ -260,6 +252,9 @@ impl Soul {
         for quest in &self.quests {
             file.write_all(&quest.to_le_bytes())?;
         }
+
+        // Write padding
+        file.write_all(&[0u8; 4])?;
 
         // Write HP telomere (null bytes)
         let hp_padding = vec![0u8; self.hp as usize];
