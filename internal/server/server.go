@@ -125,9 +125,14 @@ func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
 
 	// Create container with shellcraft label for cleanup tracking
 	config := &container.Config{
-		Image:  imageName,
-		Tty:    true,
-		Labels: map[string]string{"app": "shellcraft"},
+		Image:        imageName,
+		Tty:          true,
+		OpenStdin:    true,
+		StdinOnce:    false,
+		AttachStdin:  true,
+		AttachStdout: true,
+		AttachStderr: true,
+		Labels:       map[string]string{"app": "shellcraft"},
 	}
 	containerID, err := s.dockerClient.CreateContainer(ctx, imageName, config)
 	if err != nil {
