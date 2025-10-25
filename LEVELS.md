@@ -6,30 +6,30 @@
 
 ## Command Unlock Table
 
-| Level | Unlock | Description |
-|-------|---------|-------------|
-| 0 | `ls`, `cat`, `echo`, `rm`, `cd`, `pwd`, `whoami` | Basic commands, no arguments |
-| 1 | `ls -l` | Reveals file details ("Inspect deeper into reality") |
-| 2 | `mkdir` | Build directories ("Shape the world") |
-| 3 | `rmdir` | Destroy empty directories |
-| 4 | `touch` | Create files ("Summon fragments into being") |
-| 5 | `mv` | Move/rename files |
-| 6 | `cp` | Copy files |
-| 7 | `grep` | Search text ("Divine hidden meanings") |
-| 8 | `sort` | Order chaos |
-| 9 | `uniq` | Distill essence |
-| 10 | `wc` | Weigh the text's mass |
-| 11 | `head` / `tail` | Peer into the beginnings and ends of things |
-| 12 | `find` | Seek beyond sight |
-| 13 | `awk` | Patterned spellcraft (structured manipulation) |
-| 14 | `sed` | Transform incantations |
-| 15 | `chmod` | Control permissions ("Invoke true ownership") |
-| 16 | `chown` | Bind entities to your name |
-| 17 | `ps` | Sense processes |
-| 18 | `kill` | Exorcise processes |
-| 19 | `tar` | Contain multitudes |
-| 20 | `perl -e` (one-liners only) | Arcane scripting mastery |
-| 21-42 | **(To be designed)** | Advanced flags, specialized tools, pipeline mastery |
+| Level | Unlock | Pedagogical Goal | Related Quest |
+|-------|---------|------------------|---------------|
+| 0 | `ls`, `cat`, `echo`, `rm`, `cd`, `pwd`, `whoami` | **Navigation & observation** - Learn to explore filesystem, view files, understand location | **"Awakening"** - Explore `/home`, discover `soul.dat`, find `/sewer` |
+| 1 | `ls -l` | **File metadata** - Understand permissions, sizes, timestamps; recognize enemies by size | **"Sewer Cleanse"** - Use `ls -l` to identify rat HP before combat |
+| 2 | `mkdir` | **Filesystem manipulation** - Create structure, organize space | **"The Safe House"** - Create `/home/cache` to store quest items |
+| 3 | `rmdir` | **Directory management** - Clean up, understand empty vs. occupied | **"Spring Cleaning"** - Remove abandoned directories in `/tmp` |
+| 4 | `touch` | **File creation** - Generate new entities, understand file existence | **"The Sigil"** - Create marker files to track quest progress |
+| 5 | `mv` | **File organization** - Reorganize, rename, archive | **"The Relocation"** - Move quest items to proper locations |
+| 6 | `cp` | **Duplication & backup** - Preserve data, create copies | **"The Backup"** - Copy important scrolls before risky operations |
+| 7 | `grep` | **Text searching** - Find patterns, extract information | **"The Hidden Message"** - Extract secrets from `/etc/scrolls` |
+| 8 | `sort` | **Text processing** - Organize data, understand ordering | **"The Census"** - Sort process list by PID |
+| 9 | `uniq` | **Data deduplication** - Identify unique entries, filter | **"The Unique Paths"** - Find distinct daemon types |
+| 10 | `wc` | **Text metrics** - Count lines, words, bytes | **"The Archive Audit"** - Measure scroll collection |
+| 11 | `head` / `tail` | **Partial viewing** - Inspect start/end, monitor logs | **"The Prophecy"** - Read first lines of ancient scrolls |
+| 12 | `find` | **Recursive search** - Locate files across entire filesystem | **"The Lost Artifact"** - Find hidden `.dotfiles` |
+| 13 | `awk` | **Structured text processing** - Extract columns, perform calculations | **"The Ledger"** - Parse process memory usage |
+| 14 | `sed` | **Stream editing** - Replace text, transform data | **"The Cipher"** - Decode ROT13 messages |
+| 15 | `chmod` | **File permissions** - Understand rwx, numeric modes | **"The Locksmith"** - Fix broken permissions |
+| 16 | `chown` | **Ownership** - Change file ownership (limited in game) | **"The Inheritance"** - Claim abandoned files |
+| 17 | `ps` | **Process inspection** - Understand running programs | **"The Watcher"** - Identify suspicious daemons |
+| 18 | `kill` | **Process management** - Terminate programs, send signals | **"The Daemon Hunt"** - Kill rogue background processes |
+| 19 | `tar` | **Archiving** - Bundle files, compress data | **"The Archive"** - Extract ancient compressed lore |
+| 20 | `perl -e` (one-liners only) | **Scripting basics** - Automation, text manipulation | **"The Perl Sage"** - Unlock Larry Wall's teachings |
+| 21-42 | **(To be designed)** | **Systems mastery** - Complex pipelines, advanced techniques | **"Ascension Protocol"** (L42 final quest) |
 
 ---
 

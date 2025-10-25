@@ -189,6 +189,7 @@ $game->start_fresh()
 ## Key Files to Know
 
 ### Documentation (Read First)
+- **VISION.md** - Aesthetic guide, lore, cultural references, hackathon theme alignment
 - **LEXICON.md** - Development philosophy and guidance vectors
 - **GAME_DESIGN.md** - Canonical game design spec (mechanics, progression, lore, balance)
 - **LEVELS.md** - Complete L0-L42 command unlock table and stat progression
@@ -462,4 +463,4 @@ cd test && ./run_tests.sh         # Perl gameplay tests
 
 ---
 
-**When in doubt, read LEXICON.md for philosophy and the relevant spec file (GAME_DESIGN.md, LEVELS.md, SOUL_SPEC.md, SERVER.md) for implementation details.**
+**When in doubt, read VISION.md for aesthetic/lore guidance, LEXICON.md for philosophy, and the relevant spec file (GAME_DESIGN.md, LEVELS.md, SOUL_SPEC.md, SERVER.md) for implementation details.**
