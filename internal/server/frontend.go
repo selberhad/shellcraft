@@ -60,6 +60,13 @@ const terminalHTML = `<!DOCTYPE html>
         const basePath = (pathParts.length > 3 && pathParts[1] !== 'session') ? '/' + pathParts[1] : '';
         const wsUrl = wsProtocol + '//' + window.location.host + basePath + '/session/' + sessionId + '/ws';
 
+        console.log('WebSocket setup:', {
+            pathname: window.location.pathname,
+            pathParts: pathParts,
+            basePath: basePath,
+            wsUrl: wsUrl
+        });
+
         // Initialize terminal
         const term = new Terminal({
             cursorBlink: true,
