@@ -103,9 +103,10 @@ sub check_quests {
             }
         }
         elsif ($quest_id == $QUEST_NAVIGATE_MAZE) {
-            # Check if treasure has been found (not implemented yet)
-            # Placeholder for future implementation
-            if (-f '/sewer/.crack/under_nix/treasure') {
+            # Check if player has navigated to the treasure room
+            # Player must cd into treasure_room to complete the quest
+            my $pwd = read_player_pwd();
+            if ($pwd && $pwd =~ m{treasure_room}) {
                 $player->add_xp($QUEST_MAZE_XP);
                 $player->remove_quest($QUEST_NAVIGATE_MAZE);
                 $awarded_xp += $QUEST_MAZE_XP;
