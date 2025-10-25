@@ -77,4 +77,6 @@ More powerful spells unlock as you gain experience.
 Type 'status' to see your progress.
 EOF
 
-chmod -R 755 /sewer /crypt /tower /etc/scrolls
+# Make directories world-writable so player can delete enemy files
+chmod -R 777 /sewer /crypt /tower
+chmod -R 755 /etc/scrolls
