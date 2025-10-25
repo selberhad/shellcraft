@@ -553,7 +553,9 @@ Built following:
 
 **ShellCraft is ready to play!** 🎮⚔️
 
-Visit **http://localhost:4242** and start your adventure!
+**Play online**: https://dialectician.ai/shellcraft/
+
+Or run locally at **http://localhost:4242**
 
 For detailed implementation notes, see `IMPLEMENTATION.md`.
 For quick start guide, see `QUICKSTART.md`.
