@@ -35,6 +35,8 @@ docker run --rm \
 2. **02_progression_speedrun.t** - Simulates L0→L5 progression
 3. **03_permadeath.t** - Tests death and save deletion
 4. **04_command_unlocks.t** - Validates command/flag locking
+5. **05_quest_system.t** - Tests quest slot unlocking, acceptance, removal, persistence
+6. **06_dungeon_master_integration.t** - Tests DM quest completion detection, XP rewards, rat respawn
 
 ### Example Test
 
@@ -65,7 +67,21 @@ Chain assertions for readable flow:
 $game->fight('/sewer/rat.rat')
      ->expect_level(5)
      ->expect_alive()
+     ->add_quest(1)
+     ->expect_quest_active(1)
      ->save_or_die();
+```
+
+### Quest Testing DSL
+New methods for quest system testing:
+```perl
+$game->add_quest(1)                # Add quest ID 1
+     ->expect_quest_active(1)      # Assert quest is active
+     ->expect_quest_not_active(2)  # Assert quest not active
+     ->expect_quest_slots(2)       # Assert 2 unlocked quest slots
+     ->expect_xp(500)              # Assert exact XP amount
+     ->expect_xp_at_least(100)     # Assert minimum XP
+     ->remove_quest(1);            # Remove quest
 ```
 
 ### Automatic Enemy Creation

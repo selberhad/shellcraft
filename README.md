@@ -14,6 +14,8 @@ Built with **TDD-first methodology** following principles from `LEXICON.md`.
 - **RPG Progression**: Level 0-20 with XP-based advancement
 - **Command Unlocking**: Start with basic commands, unlock advanced tools as you level
 - **Combat System**: Fight file-based enemies (rats in `/sewer`, daemons in `/crypt`)
+- **Quest System**: Accept quests, complete objectives, earn XP rewards
+- **Dynamic World**: Dungeon Master cron process respawns monsters and manages quests
 - **Binary Savefiles**: Progress saved in `soul.dat` with magic bytes "SHC!"
 - **Fantasy Theme**: Commands become "spells", arguments are "mana", pipes are "spell combinations"
 
@@ -128,6 +130,9 @@ $> ls
 
 $> rm rat_1.rat
 # Fight a rat! Gain XP!
+
+$> ./quest
+# View and accept quests (Sewer Cleanse: kill all rats)
 ```
 
 ### Progression
@@ -150,9 +155,17 @@ Enemies are files with HP measured in bytes:
 
 Damage formula: `20 * log2(level + 2)` bytes per attack
 
+### Quest System
+
+Run `./quest` to access the quest journal:
+- **Sewer Cleanse**: Kill all rats in `/sewer` for 500 XP
+- Quests are auto-completed by the Dungeon Master (runs every minute)
+- Rats respawn gradually (25% chance per minute, max 5)
+- Unlock more quest slots as you level (1 at L0, +1 every 6 levels, max 8)
+
 ### World Locations
 
-- `/home` - Your base, contains `soul.dat`
+- `/home` - Your base, contains `soul.dat` and `quest` binary
 - `/sewer` - 5 rats for early leveling
 - `/crypt` - Tougher enemies with more XP
 - `/tower` - Riddles and puzzles (coming soon)

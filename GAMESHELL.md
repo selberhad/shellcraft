@@ -92,10 +92,12 @@ By level 42, the player has mastered an entire set of essential UNIX tools.
   xp_gain = damage_bytes
 
 ### 5.2 Quest XP
-- Rewards specified in “kB of XP”.
-- Examples:
-  - “Purge the `/sewer`” quest: 10 kB XP.
-  - “Extract the hidden message from `corrupted.adz`”: 20 kB XP.
+- Rewards specified in bytes of XP
+- **Implemented Quest**: "Sewer Cleanse" - 500 XP
+  - Objective: Kill all rats in `/sewer`
+  - Completion detected by Dungeon Master (0 rats remaining)
+  - Auto-awarded when complete
+- Future quests: Extract hidden messages, boss fights, etc.
 
 ---
 
@@ -159,13 +161,34 @@ The final quest requires the player to:
 
 ---
 
-## 11. Future Extensions
+## 11. Quest System (Implemented)
 
-- Procedurally generated quests and file hierarchies.  
-- Multiplayer leaderboard (XP totals, speedruns).  
-- “Daily challenges” with unique filesystem puzzles.  
-- Integration with real UNIX tutorials (opt-in learning mode).  
-- Optional AI “Lorekeeper” NPC (text-based mentor giving hints).
+### 11.1 Quest Binary
+- Location: `/home/quest`
+- Rust binary using libsoul for soul.dat I/O
+- Shows active quests and progress
+- Auto-accepts available quests (Sewer Cleanse at L0)
+
+### 11.2 Quest Slots
+- Formula: 1 + (level / 6), max 8
+- L0: 1 slot, L6: 2 slots, L12: 3 slots, L42: 8 slots
+- Stored in soul.dat as u32[8] array
+
+### 11.3 Dungeon Master
+- Root cron process running every minute
+- Detects quest completion conditions
+- Awards XP and removes completed quests
+- Respawns monsters (rats: 25% chance/tick, max 5)
+- Invisible to player (chmod 700, /usr/sbin location)
+
+## 12. Future Extensions
+
+- Procedurally generated quests and file hierarchies.
+- Multiplayer leaderboard (XP totals, speedruns).
+- "Daily challenges" with unique filesystem puzzles.
+- Integration with real UNIX tutorials (opt-in learning mode).
+- Optional AI "Lorekeeper" NPC (text-based mentor giving hints).
+- More quest types: Boss fights, riddles, CTF exploits
 
 ---
 

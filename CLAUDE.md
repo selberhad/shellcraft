@@ -58,9 +58,21 @@ Player state is stored in `/home/soul.dat` (binary format, see SOUL_SPEC.md):
 - Magic bytes: "SHC!" (0x53 0x48 0x43 0x21)
 - Fields: level (u32), XP (u64), quest slots (u32[8])
 - **HP is file size**: Encoded as null-byte padding (telomeres)
-- Formula: `file_size = 62 + current_hp`
+- See SOUL_SPEC.md for complete format specification
 
 **When modifying:** Ensure Perl (Player.pm) and Rust (libsoul) stay in sync.
+
+### 4. Dungeon Master (Root Cron)
+
+Background process that orchestrates the game world:
+- **Location**: `/usr/sbin/dungeon-master` (root-only, chmod 700)
+- **Schedule**: Runs every minute via cron
+- **Responsibilities**:
+  - Check quest completion conditions (e.g., Sewer Cleanse: 0 rats)
+  - Award XP and remove completed quests from soul.dat
+  - Repopulate monsters (rats: 25% chance per tick, max 5)
+- **Security**: Player cannot access or kill DM process
+- **Testing**: Use `dungeon-master --tick` for manual tick execution
 
 ---
 
@@ -76,10 +88,11 @@ shellcraft/
 ├── docker/game-image/
 │   ├── Dockerfile       # Multi-stage build (CRITICAL)
 │   ├── shellcraft.pl    # Perl game loop
+│   ├── dungeon-master.pl # Root cron process (world orchestration)
 │   ├── lib/ShellCraft/  # Perl modules (Player, Combat, Commands)
 │   └── init/            # World population scripts
 ├── rust-bins/
-│   ├── quest/           # Quest management binary
+│   ├── quest/           # Quest management binary (/home/quest)
 │   └── libsoul/         # Shared soul.dat library
 ├── test/
 │   ├── *.t              # Gameplay tests (Perl DSL)
@@ -94,11 +107,22 @@ shellcraft/
 
 ### Player Session Flow
 1. **Go server** receives HTTP request → creates Docker container
-2. **Container** runs `shellcraft.pl` (Perl game shell)
-3. **WebSocket** bridges browser ↔ container I/O
-4. **Player** executes commands → Perl validates against level
-5. **Combat** (`rm` on .rat files) → updates XP/HP in `soul.dat`
-6. **Cleanup** goroutine removes idle sessions after 15min
+2. **Container** starts cron daemon (root) then drops to `player` user
+3. **Player** runs `shellcraft.pl` (Perl game shell)
+4. **WebSocket** bridges browser ↔ container I/O
+5. **Player** executes commands → Perl validates against level
+6. **Combat** (`rm` on .rat files) → updates XP/HP in `soul.dat`
+7. **DM cron** ticks every minute (invisible to player)
+8. **Cleanup** goroutine removes idle sessions after 15min
+
+### Quest Workflow
+1. **Player** runs `/home/quest` binary
+2. **Quest binary** reads soul.dat, checks available quests
+3. **Player** accepts quest (e.g., Sewer Cleanse: kill all rats)
+4. **Player** completes objective (kills all rats in /sewer)
+5. **DM** detects completion on next tick (0 rats remaining)
+6. **DM** awards XP (500 XP) and removes quest from soul.dat
+7. **DM** gradually respawns rats (25% per tick, max 5)
 
 ### Test Flow
 1. `test/run_tests.sh` iterates over `*.t` files
@@ -275,6 +299,8 @@ $game->start_fresh()
 - ✅ Progression L0→L5 (02_progression_speedrun.t)
 - ✅ Permadeath (03_permadeath.t)
 - ✅ Command unlocks (04_command_unlocks.t)
+- ✅ Quest system API (05_quest_system.t)
+- ✅ Dungeon Master integration (06_dungeon_master_integration.t)
 
 ### Running Tests
 
