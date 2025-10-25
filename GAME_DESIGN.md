@@ -388,9 +388,102 @@ file daemon.elf     # Identify enemy type
 
 ---
 
-## 10. Future Design Considerations
+## 10. Quest System Design
 
-### 10.1 Potential Additions
+### 10.1 Quest Mechanics
+
+**Quest Binary:**
+- Location: `/home/quest`
+- Rust binary using libsoul for soul.dat I/O
+- Shows active quests with progress tracking
+- Auto-accepts available quests when slots available
+
+**Quest Slots:**
+- Formula: `1 + (level / 6)`, max 8
+- L0: 1 slot, L6: 2 slots, L12: 3 slots, L42: 8 slots
+- Stored in soul.dat as u32[8] array
+- Empty slots = 0, active quests = quest ID
+
+**Design Rationale:**
+- Gradual unlock encourages focusing on fewer quests early
+- Max 8 slots prevents quest log bloat
+- Slot unlocks align with major level milestones
+
+### 10.2 Dungeon Master (Background Process)
+
+**Purpose:** Orchestrate game world without player visibility
+
+**Location:** `/usr/sbin/dungeon-master` (root-only, chmod 700)
+
+**Schedule:** Runs every minute via cron
+
+**Responsibilities:**
+1. Check quest completion conditions
+2. Award XP and remove completed quests
+3. Repopulate world (rats, items, etc.)
+
+**Quest Completion Flow:**
+1. DM reads `/home/soul.dat` for active quests
+2. Checks completion conditions (e.g., 0 rats in /sewer)
+3. If complete: awards XP, removes quest, writes soul.dat
+4. Player sees updated XP on next `status` or `./quest` check
+
+**Design Rationale:**
+- **Invisible orchestration** - Player can't see or kill DM
+- **Stateless** - World IS the state (file counts, etc.)
+- **Asynchronous rewards** - Quest completes automatically
+- **Security model** - Root process, player cannot interfere
+
+### 10.3 Quest: Sewer Cleanse
+
+**Current Implementation:**
+
+**Objective:** Kill all rats in `/sewer`
+
+**Reward:** 500 XP
+
+**Acceptance:** Auto-offered at L0 when player runs `./quest`
+
+**Completion Detection:**
+- DM counts rats: `ls /sewer/*.rat | wc -l`
+- If count = 0: quest complete
+- Awards 500 XP, removes quest from soul.dat
+
+**Rat Respawn:**
+- 25% chance per DM tick (every minute)
+- Max 5 rats in /sewer
+- Random HP: 100-500 bytes
+
+**Design Rationale:**
+- **Teaches exploration** - Player must find /sewer
+- **Encourages thoroughness** - Must kill ALL rats
+- **Dynamic world** - Rats respawn for future players/sessions
+- **Substantial reward** - 500 XP = half of L0→L1 threshold (1000)
+
+### 10.4 Quest Strategic Impact
+
+**XP Efficiency:**
+- Sewer Cleanse: 500 XP (guaranteed, one-time)
+- 5 small rats (100 bytes each): ~500 XP total from kills
+- **Combined:** ~1000 XP = instant level-up at L0
+
+**Gameplay Flow:**
+1. Player starts, runs `./quest`, sees Sewer Cleanse
+2. Explores, finds /sewer with 5 rats
+3. Kills all rats (gains ~500 combat XP)
+4. Within 1 minute, DM awards 500 quest XP
+5. Player checks `status`: Level 1! (1000 total XP)
+
+**Strategic Depth:**
+- Quest encourages complete clearing vs. selective grinding
+- Respawn timer (25% chance) creates scarcity
+- Multiple players competing for limited rats (future multiplayer)
+
+---
+
+## 11. Future Design Considerations
+
+### 11.1 Potential Additions
 
 **Healing mechanics:**
 - Rest command (1/day heal)
@@ -407,7 +500,7 @@ file daemon.elf     # Identify enemy type
 - Achievement unlocks (hidden commands)
 - Prestige system (restart at higher difficulty)
 
-### 10.2 Design Challenges
+### 11.2 Design Challenges
 
 **Current issues:**
 - No healing means one bad fight can end run
@@ -421,7 +514,7 @@ file daemon.elf     # Identify enemy type
 
 ---
 
-## 11. Design Success Metrics
+## 12. Design Success Metrics
 
 **A good game session should include:**
 - ✅ Tension (low HP decisions)
@@ -444,7 +537,7 @@ file daemon.elf     # Identify enemy type
 
 ---
 
-## 12. Design Philosophy Summary
+## 13. Design Philosophy Summary
 
 | Principle | Implementation | Effect |
 |-----------|----------------|--------|
