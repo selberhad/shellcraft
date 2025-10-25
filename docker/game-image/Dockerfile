@@ -16,9 +16,10 @@ RUN cargo build --release
 # Runtime stage
 FROM alpine:3.20
 
-# Install Perl and essential GNU tools
+# Install Perl, cron, and essential GNU tools
 RUN apk add --no-cache \
     perl \
+    dcron \
     coreutils \
     grep \
     sed \
@@ -27,9 +28,11 @@ RUN apk add --no-cache \
     ncurses \
     bash
 
+# Create non-root player user
+RUN adduser -D -h /home -s /usr/local/bin/shellcraft.pl player
+
 # Create game world directories
 RUN mkdir -p \
-    /home \
     /sewer \
     /crypt \
     /tower \
@@ -39,18 +42,26 @@ RUN mkdir -p \
 # Copy Rust binaries from builder
 COPY --from=builder /build/rust-bins/target/release/quest /home/quest
 
-# Copy game shell and libraries (build context is repo root)
+# Copy game shell, dungeon master, and libraries (build context is repo root)
 COPY docker/game-image/shellcraft.pl /usr/local/bin/shellcraft.pl
+COPY docker/game-image/dungeon-master.pl /usr/sbin/dungeon-master
 COPY docker/game-image/lib/ShellCraft/ /usr/local/lib/shellcraft/
 COPY docker/game-image/init/welcome.txt /etc/shellcraft/welcome.txt
 COPY docker/game-image/init/populate-world.sh /tmp/populate-world.sh
 
 # Make shell and binaries executable, populate world
 RUN chmod +x /usr/local/bin/shellcraft.pl && \
+    chmod +x /usr/sbin/dungeon-master && \
+    chmod 700 /usr/sbin/dungeon-master && \
     chmod +x /home/quest && \
     chmod +x /tmp/populate-world.sh && \
     /tmp/populate-world.sh && \
-    rm /tmp/populate-world.sh
+    rm /tmp/populate-world.sh && \
+    chown -R player:player /home && \
+    chmod 755 /sewer /crypt /tower /etc/scrolls
+
+# Set up root crontab for Dungeon Master (runs every minute)
+RUN echo "* * * * * /usr/sbin/dungeon-master >/dev/null 2>&1" | crontab -
 
 # Set Perl library path
 ENV PERL5LIB=/usr/local/lib/shellcraft
@@ -73,5 +84,11 @@ RUN rm -f \
 # Set working directory
 WORKDIR /home
 
-# Run game shell as entrypoint
-CMD ["perl", "/usr/local/bin/shellcraft.pl"]
+# Create entrypoint script that starts cron and switches to player user
+RUN echo '#!/bin/sh' > /entrypoint.sh && \
+    echo 'crond' >> /entrypoint.sh && \
+    echo 'exec su - player' >> /entrypoint.sh && \
+    chmod +x /entrypoint.sh
+
+# Run entrypoint (starts cron as root, then drops to player)
+CMD ["/entrypoint.sh"]

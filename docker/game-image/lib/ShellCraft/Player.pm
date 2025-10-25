@@ -11,6 +11,7 @@ sub new {
         level         => $args{level} || 0,
         xp            => $args{xp} || 0,
         hp            => $args{hp} // $class->max_hp(0),  # Default to max HP for level 0
+        quests        => $args{quests} || [(0) x 8],       # 8 quest slots, 0 = empty
         last_activity => time(),
     };
 
@@ -70,19 +71,26 @@ sub load {
     read($fh, $version_bytes, 2);
     my $version = unpack('S', $version_bytes);
 
-    # Read player data
-    my $data;
-    read($fh, $data, 12);
-    my ($level, $xp) = unpack('LQ<', $data);
+    # Skip checksum (8 bytes)
+    seek($fh, 8, 1);
 
-    # Skip quest slots (32 bytes) and padding (4 bytes) for now
-    seek($fh, 36, 1);  # Skip forward 36 bytes
+    # Read level (4 bytes)
+    read($fh, $data, 4);
+    my $level = unpack('L<', $data);
+
+    # Read XP (8 bytes, u64)
+    read($fh, $data, 8);
+    my $xp = unpack('Q<', $data);
+
+    # Read quest slots (32 bytes = 8 x u32)
+    read($fh, $data, 32);
+    my @quests = unpack('L<8', $data);
 
     close $fh;
 
     # HP is the "telomere" - the file size minus the header
-    # Header: 4 (magic) + 2 (version) + 8 (checksum) + 4 (level) + 8 (xp) + 32 (quests) + 4 (padding) = 62 bytes
-    my $header_size = 62;
+    # Header: 4 (magic) + 2 (version) + 8 (checksum) + 4 (level) + 8 (xp) + 32 (quests) = 58 bytes
+    my $header_size = 58;
     my $hp = $file_size - $header_size;
 
     # Clamp HP to max for level (in case of corruption)
@@ -91,9 +99,10 @@ sub load {
     $hp = 0 if $hp < 0;
 
     my $player = $class->new(
-        level => $level,
-        xp    => $xp,
-        hp    => $hp,
+        level  => $level,
+        xp     => $xp,
+        hp     => $hp,
+        quests => \@quests,
     );
 
     return $player;
@@ -123,8 +132,8 @@ sub save {
     print $fh pack('LQ<', $self->{level}, $self->{xp});
 
     # Write quest slots (8 x u32 = 32 bytes)
-    my @quests = (0) x 8;  # Default: all empty
-    print $fh pack('L8', @quests);
+    my @quests = @{$self->{quests}};
+    print $fh pack('L<8', @quests);
 
     # Write HP as "telomeres" - null bytes padding
     # This makes HP visible as file size!
@@ -216,6 +225,68 @@ sub _fibonacci {
         ($a, $b) = ($b, $a + $b);
     }
     return $b;
+}
+
+# Get number of unlocked quest slots for current level
+# Formula: 1 slot at L0, +1 every 6 levels, max 8 at L42
+sub unlocked_quest_slots {
+    my ($self) = @_;
+    my $slots = 1 + int($self->{level} / 6);
+    return $slots > 8 ? 8 : $slots;
+}
+
+# Get active quests (non-zero quest IDs in unlocked slots)
+sub active_quests {
+    my ($self) = @_;
+    my $unlocked = $self->unlocked_quest_slots();
+    my @active;
+
+    for (my $i = 0; $i < $unlocked; $i++) {
+        my $quest_id = $self->{quests}[$i];
+        push @active, $quest_id if $quest_id != 0;
+    }
+
+    return @active;
+}
+
+# Check if a quest is active
+sub has_quest {
+    my ($self, $quest_id) = @_;
+    my @active = $self->active_quests();
+    return grep { $_ == $quest_id } @active;
+}
+
+# Add a quest to the first available slot
+sub add_quest {
+    my ($self, $quest_id) = @_;
+
+    return 0 if $quest_id == 0;  # Can't add quest 0 (empty marker)
+    return 0 if $self->has_quest($quest_id);  # Already active
+
+    my $unlocked = $self->unlocked_quest_slots();
+    for (my $i = 0; $i < $unlocked; $i++) {
+        if ($self->{quests}[$i] == 0) {
+            $self->{quests}[$i] = $quest_id;
+            return 1;
+        }
+    }
+
+    return 0;  # No slots available
+}
+
+# Remove a quest from all slots
+sub remove_quest {
+    my ($self, $quest_id) = @_;
+    my $removed = 0;
+
+    for (my $i = 0; $i < 8; $i++) {
+        if ($self->{quests}[$i] == $quest_id) {
+            $self->{quests}[$i] = 0;
+            $removed = 1;
+        }
+    }
+
+    return $removed;
 }
 
 1;
