@@ -12,6 +12,10 @@ use Player;
 # 2. Award quest XP and remove completed quests
 # 3. Repopulate monsters (rats, etc.)
 # 4. Apply environmental effects
+#
+# Usage:
+#   dungeon-master           # Normal cron mode (runs tick)
+#   dungeon-master --tick    # Explicit tick (for testing)
 
 # Configuration
 my $SOUL_PATH = '/home/soul.dat';
@@ -23,8 +27,9 @@ my $MAX_RATS = 5;
 my $QUEST_SEWER_CLEANSE = 1;
 my $QUEST_SEWER_XP = 500;
 
-# Main tick
-main();
+# Main tick - run if called directly or with --tick
+my $should_tick = (@ARGV == 0) || ($ARGV[0] eq '--tick');
+main() if $should_tick;
 
 sub main {
     # Load player soul (read-only for quest checks)
