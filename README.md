@@ -11,7 +11,7 @@ Built with **TDD-first methodology** following principles from `LEXICON.md`.
 ## 🎮 Features
 
 ### Complete Game System
-- **RPG Progression**: Level 0-20 with XP-based advancement
+- **RPG Progression**: Level 0-42 with XP-based advancement (fibonacci scaling)
 - **Command Unlocking**: Start with basic commands, unlock advanced tools as you level
 - **Combat System**: Fight file-based enemies (rats in `/sewer`, daemons in `/crypt`)
 - **Quest System**: Accept quests, complete objectives, earn XP rewards

@@ -190,7 +190,8 @@ $game->start_fresh()
 
 ### Documentation (Read First)
 - **LEXICON.md** - Development philosophy and guidance vectors
-- **GAMESHELL.md** - Game design spec (mechanics, progression, lore)
+- **GAME_DESIGN.md** - Canonical game design spec (mechanics, progression, lore, balance)
+- **LEVELS.md** - Complete L0-L42 command unlock table and stat progression
 - **SOUL_SPEC.md** - Binary savefile format
 - **SERVER.md** - Go server TDD implementation plan
 - **TESTING.md** - Test infrastructure overview
@@ -230,14 +231,14 @@ $game->start_fresh()
         ->expect_cannot_use('grep -i');
    ```
 
-3. Update `GAMESHELL.md` unlock table
+3. Update `LEVELS.md` unlock table
 
 ### Modify XP Formula
 
 **Files to update:**
 - `lib/ShellCraft/Player.pm` - `xp_for_next_level()` method
 - `test/GameTest.pm` - `xp_for_level()` helper (keep in sync!)
-- `GAMESHELL.md`, `GAME_DESIGN.md`, `README.md` - Documentation
+- `GAME_DESIGN.md`, `README.md` - Documentation
 - All tests that use `level_up_once()` or check XP values
 
 **Current formula:** `fibonacci(level + 2) * 1000`
@@ -461,4 +462,4 @@ cd test && ./run_tests.sh         # Perl gameplay tests
 
 ---
 
-**When in doubt, read LEXICON.md for philosophy and the relevant spec file (GAMESHELL.md, SOUL_SPEC.md, SERVER.md) for implementation details.**
+**When in doubt, read LEXICON.md for philosophy and the relevant spec file (GAME_DESIGN.md, LEVELS.md, SOUL_SPEC.md, SERVER.md) for implementation details.**

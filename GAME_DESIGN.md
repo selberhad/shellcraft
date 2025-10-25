@@ -62,11 +62,13 @@ damage = 20 * log2(level + 2)
 - L5: 56 bytes
 - L10: 72 bytes
 - L20: 92 bytes
+- L30: 106 bytes
+- L42: 118 bytes
 
 **Design Rationale:**
 - **Logarithmic scaling** - Prevents exponential power creep
 - **Early-game viability** - Even L0 players can fight rats (100-500 bytes)
-- **Late-game challenge** - L20 still takes multiple turns for big enemies
+- **Late-game challenge** - Even L42 max-level still takes multiple turns for big enemies
 
 #### Enemy Damage
 ```perl
@@ -122,11 +124,13 @@ max_hp = 100 + (level * 20)
 - L5: 200 HP
 - L10: 300 HP
 - L20: 500 HP
+- L30: 700 HP
+- L42: 940 HP
 
 **Design Rationale:**
 - **Linear scaling** - Simple, predictable growth
 - **Survives multiple rats** - L0 player with 100 HP can fight ~5 rats (14 dmg each)
-- **Late-game buffer** - L20 with 500 HP can take 10+ daemon hits
+- **Late-game buffer** - L42 with 940 HP can survive extended combat sequences
 
 ### 3.3 HP Restoration
 
@@ -145,15 +149,24 @@ max_hp = 100 + (level * 20)
 
 ### 4.1 XP Sources
 
+**What is XP?**
+XP represents **"bytes of knowledge"** - the fundamental unit of data manipulated, removed, or created in the game world. Every byte matters.
+
 **Combat XP:**
-- **Partial damage:** Awarded each turn for damage dealt
-- **Kill bonus:** Full enemy max HP awarded on victory
-- **Example:** 214-byte rat gives 214 XP total (20+20+20+... per hit)
+- **Partial damage:** Awarded each turn for damage dealt (bytes removed from enemy file)
+- **Kill bonus:** Full enemy max HP awarded on victory (complete file deletion)
+- **Example:** 214-byte rat gives 214 XP total (20+20+20+... per hit, then bonus)
+
+**Quest XP:**
+- Awarded in bytes (e.g., Sewer Cleanse: 500 XP)
+- Represents knowledge gained from completing objectives
+- See §10 for quest system details
 
 **Design Rationale:**
 - **Incremental rewards** - Even losing fights gives partial XP
 - **Encourages completion** - Kill bonus rewards finishing fights
 - **Natural pacing** - Can't grind infinitely; enemies must respawn/repopulate
+- **Tangible abstraction** - "Bytes of knowledge" makes XP feel concrete
 
 ### 4.2 Level-Up Formula
 ```perl
@@ -182,38 +195,51 @@ xp_needed = fibonacci(level + 2) * 1000
 
 ### 5.1 Progression Philosophy
 
-Commands unlock in **pedagogical order**, from simple to complex:
+Commands unlock in **pedagogical order**, from simple to complex. The progression from L0 → L42 gradually teaches all essential UNIX tools.
 
-**Tier 1 (L0):** Absolute basics
-- `ls`, `cat`, `echo`, `rm`, `cd`, `pwd`, `whoami`, `mkdir`, `touch`
+**See LEVELS.md for the complete command unlock table and stat progression.**
 
-**Tier 2 (L1-5):** Arguments and file manipulation
-- `ls -l`, `ls -a` (L1)
-- `mv`, `cp` (L2)
-- `rmdir` (L3)
-- `file`, `wc` (L4)
-- `head`, `tail` (L5)
+**Key Principles:**
+- **One unlock per level** - Each level grants exactly one new command, flag, or argument
+- **Pedagogical order** - Simple → complex, following real-world learning paths
+- **Flag validation** - Flags require specific unlocks, but filenames don't (see §5.3)
+- **Fibonacci XP scaling** - Later levels require exponentially more experience
+- **Level 42 significance** - Complete UNIX mastery + full man page access
 
-**Tier 3 (L6-11):** Text processing
-- `grep` (L6)
-- `grep -i`, `grep -n`, `grep -v` (L7)
-- `sort` (L8)
-- `uniq` (L9)
-- `wc -l`, `wc -w`, `wc -c` (L10)
-- `head -n`, `tail -n`, `tail -f` (L11)
+**Progression Tiers:**
+- **Tier 1 (L0-L6):** File navigation and manipulation (`ls`, `cd`, `mkdir`, `mv`, `cp`)
+- **Tier 2 (L7-L11):** Text processing basics (`grep`, `sort`, `uniq`, `wc`, `head`, `tail`)
+- **Tier 3 (L12-L19):** Advanced tools (`find`, `awk`, `sed`, `chmod`, `ps`, `tar`)
+- **Tier 4 (L20-L30):** Scripting, advanced flags, specialized utilities
+- **Tier 5 (L31-L42):** Systems mastery, networking, pipeline complexity
 
-**Tier 4 (L12+):** Advanced mastery
-- `find` (L12)
-- `awk` (L13)
-- `sed` (L14)
-- `chmod` (L15)
-- `chown` (L16)
-- `ps` (L17)
-- `kill` (L18)
-- `tar` (L19)
-- `perl -e` (L20) - **True arcane mastery!**
+### 5.2 Man Page Mechanic
 
-### 5.2 Flag Validation
+**"Fragmentary Knowledge" System:**
+
+The `man` command is wrapped by the game shell to simulate incomplete understanding. Players see progressively more of each man page as they level up.
+
+**Mechanic:**
+- `man` shows a **random snippet** of the actual man page
+- **Snippet size scales with level**: `visible_lines = base_lines + (level * scaling_factor)`
+- At **L0**: Tiny fragments (maybe 5-10 lines from a random section)
+- At **L42**: Full man page visible (complete mastery)
+
+**Design Rationale:**
+- **Progressive documentation** - Mirrors real learning (you don't understand everything at once)
+- **Replayability** - Random snippets mean different runs show different info
+- **Encourages experimentation** - Can't rely solely on docs; must try commands
+- **Thematic fit** - "Ancient scrolls" are fragmentary until mastery achieved
+- **L42 reward** - Full documentation access is a tangible benefit of max level
+
+**Implementation Notes:**
+- Shell intercepts `man` command before execution
+- Selects random contiguous section of real man page
+- Returns only that fragment with "..." indicators for missing content
+- Higher levels = larger contiguous sections
+- At L42, passes through to real `man` command unmodified
+
+### 5.3 Flag Validation
 
 **Key Innovation:** Flags require specific unlocks, but filenames don't.
 
@@ -335,6 +361,7 @@ file daemon.elf     # Identify enemy type
 | Files | Entities/Creatures | Everything is a tangible object |
 | Bytes | XP/Life force | Fundamental unit of power |
 | Telomeres | HP/Life essence | Biological metaphor for file size |
+| Man pages | Ancient scrolls | Fragmented wisdom - shell wrapper shows random snippets that scale with level |
 
 ### 8.2 Tone and Voice
 
@@ -481,9 +508,125 @@ file daemon.elf     # Identify enemy type
 
 ---
 
-## 11. Future Design Considerations
+## 11. World Design
 
-### 11.1 Potential Additions
+### 11.1 Zone Structure
+
+The player's environment is a **fake filesystem**, representing different zones:
+
+| Directory | Description |
+|-----------|-------------|
+| `/home` | Player home, containing `soul.dat` (savefile) and the `quest` binary. |
+| `/sewer` | Early-game rat grinding area. Contains `.rat` files (100-500 bytes). |
+| `/crypt` | Mid-game challenge area with encrypted `.elf` files (skeletons, daemons). |
+| `/tower` | Late-game environment for advanced text puzzles. |
+| `/etc/scrolls` | Contains fragments of lore and command hints. |
+| `/dev/null` | The Void — a location of philosophical significance. |
+
+### 11.2 Zone Lore
+
+**The Sewer:**
+- Infested with rats (basic file-based enemies)
+- Low-risk environment for early grinding
+- First quest location (Sewer Cleanse)
+- Rats respawn over time (25% per DM tick, max 5)
+
+**The Crypt:**
+- Ancient burial ground with undead `.elf` executables
+- Mid-game danger zone (skeletons: 800 bytes, daemons: 1200 bytes)
+- Contains encrypted files and hidden secrets
+- Higher risk, higher reward
+
+**The Tower:**
+- Late-game text manipulation challenges
+- Requires advanced commands (awk, sed, grep patterns)
+- Lore-heavy environment with philosophical puzzles
+- Final quest stages likely located here
+
+**Scrolls of `/etc`:**
+- Lore fragments about the world's history
+- Philosophical musings on the nature of commands
+- Cryptic hints for hidden quests
+- Ancient tales of master shell wielders
+
+**The Void (`/dev/null`):**
+- Mysterious location mentioned in scrolls
+- Philosophical significance (where deleted files go)
+- Possible late-game quest interaction
+
+---
+
+## 12. Technical Constraints
+
+### 12.1 Runtime Environment
+- One Docker container per player session
+- No external networking except for optional "final challenge" service
+- Standard GNU tools preinstalled
+- Restricted PATH filters out forbidden editors and network tools
+- Alpine Linux base with minimal attack surface
+
+### 12.2 Forbidden Commands
+
+The following commands are blocked to maintain game integrity and security:
+
+**Editors:** `vi`, `vim`, `nano`, `emacs` (would bypass progression system)
+
+**Network Tools:** `curl`, `wget`, `scp`, `ssh` (except for endgame quest)
+
+**Scripting Languages:** `python`, `ruby`, `node`, `pip` (would trivialize challenges)
+
+**Development Tools:** `gcc`, `make`, `cargo`, `npm` (could compile arbitrary code)
+
+**Package Managers:** `apk`, `apt`, `yum` (could install forbidden tools)
+
+### 12.3 Allowed "Endgame" Magic
+
+The following advanced tools are permitted for late-game progression:
+
+- `perl -e` (one-liners only, unlocked at L20)
+- `awk` (unlocked at L13)
+- `sed` (unlocked at L14)
+- Small subsets of `bash` builtins (loops, conditionals)
+- `nc` or `telnet` (for final quest network daemon connection)
+
+**Design Rationale:**
+- `perl` one-liners teach scripting without full language access
+- Text processing tools are pedagogical (core UNIX skills)
+- Network commands only matter for final challenge
+- Bash builtins enable quest logic without external interpreters
+
+---
+
+## 13. Endgame & Win Condition
+
+### 13.1 Final Quest
+
+The ultimate victory requires the player to:
+
+1. **Discover a hidden hostname** - Embedded in one of the ancient file formats (`.adz`, `.dms` archives in `/tower`)
+2. **Use network command** - Connect locally using `nc` to a "daemon" service running in the container
+3. **Receive secret argument** - Daemon provides a cryptographic key or passphrase
+4. **Invoke victory command** - Run the final spell: `ascend --key <value>` (or similar)
+
+### 13.2 Design Rationale
+
+**Why this works:**
+- **Requires mastery of file analysis** - Player must use `file`, `strings`, `grep`, `awk` to extract hostname
+- **Introduces networking concepts** - `nc` (netcat) is a fundamental hacker tool
+- **Teaches command chaining** - Extracting → connecting → authenticating requires pipeline mastery
+- **Ceremonial reward** - Victory command provides satisfying conclusion
+
+**Future Expansion:**
+- Multiple endings based on player choices
+- Hidden "true ending" for completionists
+- Speedrun mode with leaderboard integration
+- Permadeath hall of fame (player souls immortalized)
+
+---
+
+## 14. Future Design Considerations
+
+### 14.1 Potential Additions
 
 **Healing mechanics:**
 - Rest command (1/day heal)
@@ -500,7 +643,25 @@ file daemon.elf     # Identify enemy type
 - Achievement unlocks (hidden commands)
 - Prestige system (restart at higher difficulty)
 
-### 11.2 Design Challenges
+**World expansion:**
+- Procedurally generated quests and file hierarchies
+- Daily challenges with unique filesystem puzzles
+- More quest types: Boss fights, riddles, CTF exploits
+- Randomized lore fragments and hidden secrets
+
+**Social features:**
+- Multiplayer leaderboard (XP totals, speedruns)
+- Shared world state (limited rats create competition)
+- Player ghosts (see where others died)
+- Cooperative quests (future)
+
+**Educational integration:**
+- Optional "learning mode" with detailed explanations
+- Real UNIX tutorial integration
+- AI "Lorekeeper" NPC (text-based mentor giving hints)
+- Achievement-based skill certifications
+
+### 14.2 Design Challenges
 
 **Current issues:**
 - No healing means one bad fight can end run
