@@ -114,11 +114,11 @@ The filesystem is vast, unknowable, dangerous. Processes spawn and die. Daemons 
 - **Technically accurate** (real UNIX, not handwaving)
 
 **Command Feedback:**
-- ✅ "You invoke the `grep` incantation. The text yields its secrets."
-- ✅ "You lack the wisdom to wield `grep -r`. Train harder, apprentice."
-- ✅ "The Rat lunges! It corrupts 14 bytes of your soul..."
-- ❌ "Invalid command" (too mundane)
-- ❌ "Error 404" (breaks immersion)
+- UNIX commands output real, standard UNIX output (pedagogical first!)
+- `ls` shows actual file listings, `grep` shows actual matches, etc.
+- Flavor comes from file *names* (.rat, .elf) and quest *narrative*, not command output
+- Level locks are clear: "Command not unlocked. Requires level X."
+- The world is fantasy, but the terminal is real UNIX
 
 **Death Messages:**
 ```
@@ -147,12 +147,10 @@ The system reclaims your PID.
 - `/etc` - The Archives (scrolls, configs)
 
 **Commands as Spells:**
-- `ls` - "Reveal Hidden Truths"
-- `grep` - "Divine Hidden Meanings"
-- `awk` - "Patterned Spellcraft"
-- `rm` - "Exorcise Entity" (combat)
-- `chmod` - "Invoke True Ownership"
-- `kill` - "Terminate Process" (daemon combat)
+- Commands are treated as incantations with real power
+- Syntax matters (one wrong character and the spell fails)
+- Arguments are learned progressively (more powerful forms unlock with levels)
+- Pipelines are spell combinations (chaining effects together)
 
 ---
 
@@ -311,19 +309,17 @@ Building for *feel* and *aesthetic* first, optimization second. The goal is to c
 ### 6.2 Educational Without Being Didactic
 
 **Bad:**
-> "The `grep` command searches for patterns in text. Syntax: grep [pattern] [file]"
+> Replacing grep output with flavor text
 
 **Good:**
-> "You invoke the `grep` incantation. The patterns hidden within the scroll reveal themselves to your eyes."
+> Real grep output, but you're searching files named "ancient_scroll.txt"
 
-**Even Better:**
-> [Player tries to use `grep -r` at L6]
-> "The recursive form eludes you. Such power requires deeper knowledge. (Unlocks at L7)"
-
-**Philosophy:**
-- Never break character with technical explanations
-- Teach through restrictions (can't use X until you've earned it)
-- Mistakes are part of the lore ("The spell fizzles...")
+**How to teach:**
+- Commands work exactly like real UNIX
+- Learning comes from progressive unlocking (can't use -r until L7)
+- Context is fantasy (fighting .rat files), mechanics are real (actual rm/truncate)
+- Quest objectives require specific commands ("Use grep to find the hidden password")
+- No hand-holding, just clear error messages when locked
 
 ### 6.3 Constraints as Features
 
