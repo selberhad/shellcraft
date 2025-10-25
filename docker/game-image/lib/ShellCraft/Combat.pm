@@ -27,8 +27,16 @@ sub handle_combat {
     my $enemy_hp = $enemy_max_hp;
     my $enemy_name = get_enemy_name($target);
 
+    # ANSI color codes
+    my $RED = "\e[31m";
+    my $GREEN = "\e[32m";
+    my $YELLOW = "\e[33m";
+    my $CYAN = "\e[36m";
+    my $BOLD = "\e[1m";
+    my $RESET = "\e[0m";
+
     print "\n";
-    print "You engage $enemy_name in combat!\n";
+    print "${YELLOW}You engage $enemy_name in combat!${RESET}\n";
     combat_sleep(1);
 
     # Combat loop - alternating turns
@@ -39,7 +47,7 @@ sub handle_combat {
         combat_sleep(1);
 
         my $player_damage = calc_player_damage($player->{level});
-        print "You strike $enemy_name for $player_damage damage!\n";
+        print "${GREEN}You strike $enemy_name for ${BOLD}$player_damage${RESET}${GREEN} damage!${RESET}\n";
         $enemy_hp -= $player_damage;
 
         combat_sleep(1);
@@ -71,8 +79,8 @@ sub handle_combat {
                 warn "  Dir perms: $dir_perms, owner: $dir_uid:$dir_gid\n";
             }
             print "\n";
-            print "*** $enemy_name has been vanquished! ***\n";
-            print "+${enemy_max_hp} XP\n";
+            print "${BOLD}${GREEN}*** $enemy_name has been vanquished! ***${RESET}\n";
+            print "${CYAN}+${enemy_max_hp} XP${RESET}\n";
             $player->add_xp($enemy_max_hp);
 
             # Restore HP to full on victory
@@ -82,7 +90,7 @@ sub handle_combat {
 
             if ($old_hp < $max_hp) {
                 my $healed = $max_hp - $old_hp;
-                print "HP restored to full! (+$healed HP)\n";
+                print "${GREEN}HP restored to full! (+$healed HP)${RESET}\n";
             }
 
             $player->save();
@@ -90,19 +98,20 @@ sub handle_combat {
         }
 
         # Show enemy HP
-        print "$enemy_name: ${enemy_hp}/${enemy_max_hp} bytes remaining\n";
+        print "${YELLOW}$enemy_name: ${enemy_hp}/${enemy_max_hp} bytes remaining${RESET}\n";
         combat_sleep(1);
 
         # Enemy's turn
         print "\n";
-        print "$enemy_name strikes back!\n";
+        print "${RED}$enemy_name strikes back!${RESET}\n";
         combat_sleep(1);
 
         my $enemy_damage = calc_enemy_damage($enemy_max_hp);
-        print "$enemy_name hits you for $enemy_damage damage!\n";
+        print "${RED}$enemy_name hits you for ${BOLD}$enemy_damage${RESET}${RED} damage!${RESET}\n";
 
         my $new_hp = $player->take_damage($enemy_damage);
-        print "Your HP: ${new_hp}/" . $player->max_hp() . "\n";
+        my $hp_color = $new_hp < $player->max_hp() * 0.3 ? $RED : $CYAN;
+        print "${hp_color}Your HP: ${new_hp}/" . $player->max_hp() . "${RESET}\n";
 
         combat_sleep(1);
 
