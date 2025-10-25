@@ -116,25 +116,9 @@ The player’s environment is a **fake filesystem**, representing different zone
 
 ## 7. Save System
 
-### 7.1 File Format: `soul.dat`
+Player progress is stored in `/home/soul.dat` - a binary file with magic bytes "SHC!".
 
-Binary savefile representing player progress.
-Stored in the player's `/home` directory.
-
-| Offset | Field | Description |
-|---------|--------|-------------|
-| `0x00–0x03` | Magic bytes | “SHC!” (ShellCraft Header) |
-| `0x04–0x05` | Version | 16-bit integer |
-| `0x06–0x0F` | Checksum | XOR or CRC32 of payload |
-| `0x10–0x1F` | Player level | Obfuscated (e.g. XOR with salt) |
-| `0x20–0x3F` | XP counter | 64-bit little-endian |
-| `0x40–…` | Learned commands bitmap | One bit per unlock |
-| `…` | Lore fragments | Optional ASCII-encoded text blocks |
-
-### 7.2 Encoding
-- Endianness may vary per version.  
-- All values XORed with player-specific salt derived from username.  
-- "Corrupted" saves can still be partially read via `strings soul.dat`.
+See `SOUL_SPEC.md` for complete binary format specification.
 
 ---
 

@@ -323,7 +323,7 @@ impl std::fmt::Display for SoulError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Io(e) => write!(f, "I/O error: {}", e),
-            Self::FileTooSmall(size) => write!(f, "File too small: {} bytes (need >= 54)", size),
+            Self::FileTooSmall(size) => write!(f, "File too small: {} bytes", size),
             Self::InvalidMagic(magic) => write!(f, "Invalid magic bytes: {:?}", magic),
             Self::UnsupportedVersion(v) => write!(f, "Unsupported version: {}", v),
             Self::InvalidLevel(l) => write!(f, "Invalid level: {} (max 42)", l),

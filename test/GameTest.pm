@@ -27,7 +27,7 @@ sub new {
 
     my $self = {
         player      => undef,
-        save_path   => $opts{save_path} || '/tmp/test_spellbook.dat',
+        save_path   => $opts{save_path} || '/tmp/test_soul.dat',
         verbose     => $opts{verbose} // 0,
         test_name   => $opts{test_name} || 'unnamed_test',
         assertions  => 0,

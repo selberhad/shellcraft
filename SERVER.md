@@ -26,7 +26,7 @@ The focus of this TDD plan is correctness, isolation, and robustness — ensurin
 - Each player gets a dedicated Docker container
 - Image: prebuilt shell environment with limited commands
 - No external networking; local-only communication with orchestrator
-- Player state stored in `/home/spellbook.dat`
+- Player state stored in `/home/soul.dat`
 
 ---
 
@@ -103,7 +103,7 @@ Use a fake Docker backend for unit testing.
 5.a Write failing tests using websocket dialer:
 - Connect to `/session/{id}/ws`.
 - Send `"ls\n"`.
-- Expect mock PTY output `"spellbook.dat"`.
+- Expect mock PTY output `"soul.dat"`.
 
 Use a mock PTY that echoes simulated shell output for tests.
 

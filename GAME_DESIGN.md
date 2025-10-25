@@ -101,14 +101,9 @@ When player HP reaches 0:
 
 ### 3.1 The Telomere Concept
 
-Player HP is stored as **null-byte padding** at the end of `soul.dat`:
+Player HP is stored as **null-byte padding** at the end of `soul.dat`.
 
-```
-soul.dat structure:
-[62 bytes: header] [X bytes: HP as 0-padding]
-
-File size = 62 + HP
-```
+See `SOUL_SPEC.md` for complete binary format details.
 
 **Design Rationale:**
 - **Poetic biology metaphor** - Telomeres shorten with age/damage

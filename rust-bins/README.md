@@ -23,7 +23,7 @@ Quest management interface:
 - Accept new quests based on player level
 - Turn in completed quests for rewards
 
-Reads/writes player quest state from `spellbook.dat`.
+Reads/writes player quest state from `soul.dat`.
 
 ## Development
 
@@ -70,7 +70,7 @@ The builder stage is discarded, keeping the final image small.
 - No network access needed
 
 **Common patterns:**
-- Read `spellbook.dat` for player state
+- Read `soul.dat` for player state
 - Check filesystem for quest conditions
-- Write state back to `spellbook.dat`
+- Write state back to `soul.dat`
 - Print fantasy-themed output

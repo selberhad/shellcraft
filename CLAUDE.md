@@ -309,10 +309,10 @@ docker run --rm \
 # Run game interactively
 docker run -it --rm shellcraft/game:latest
 
-# Inspect soul.dat
+# Inspect soul.dat (see SOUL_SPEC.md for format)
 docker run -it --rm shellcraft/game:latest sh
 # Inside container:
-ls -l /home/soul.dat     # Check HP (file size - 62)
+ls -l /home/soul.dat
 hexdump -C /home/soul.dat | head -20
 ```
 
