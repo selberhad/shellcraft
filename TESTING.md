@@ -31,12 +31,17 @@ docker run --rm \
 
 ### Current Tests
 
-1. **01_basic_combat.t** - Verifies basic combat mechanics
-2. **02_progression_speedrun.t** - Simulates L0→L5 progression
-3. **03_permadeath.t** - Tests death and save deletion
-4. **04_command_unlocks.t** - Validates command/flag locking
-5. **05_quest_system.t** - Tests quest slot unlocking, acceptance, removal, persistence
-6. **06_dungeon_master_integration.t** - Tests DM quest completion detection, XP rewards, rat respawn
+1. **00_dsl_filesystem.t** - Tests filesystem assertion DSL methods
+2. **00_dsl_commands.t** - Tests command execution DSL methods
+3. **00_dsl_dm_tick.t** - Tests DM tick simulation
+4. **01_basic_combat.t** - Verifies basic combat mechanics
+5. **02_progression_speedrun.t** - Simulates L0→L5 progression
+6. **03_permadeath.t** - Tests death and save deletion
+7. **04_command_unlocks.t** - Validates command/flag locking
+8. **05_quest_system.t** - Tests quest slot unlocking, acceptance, removal, persistence
+9. **06_dungeon_master_integration.t** - Tests DM quest completion detection, XP rewards, rat respawn
+10. **07_quest_the_crack.t** - Tests L2 quest (The Crack) with PWD-based completion
+11. **08_quest_locked_door.t** - Tests L3 quest (Locked Door) with DM transformation
 
 ### Example Test
 
@@ -73,7 +78,7 @@ $game->fight('/sewer/rat.rat')
 ```
 
 ### Quest Testing DSL
-New methods for quest system testing:
+Quest system testing methods:
 ```perl
 $game->add_quest(1)                # Add quest ID 1
      ->expect_quest_active(1)      # Assert quest is active
@@ -83,6 +88,34 @@ $game->add_quest(1)                # Add quest ID 1
      ->expect_xp_at_least(100)     # Assert minimum XP
      ->remove_quest(1);            # Remove quest
 ```
+
+### Filesystem Testing DSL
+Filesystem assertion methods:
+```perl
+$game->expect_file_exists('/sewer/.crack/.clue')     # Assert file exists
+     ->expect_file_not_exists('/tmp/gone.txt')       # Assert file doesn't exist
+     ->expect_dir_exists('/sewer/.crack')            # Assert directory exists
+     ->expect_dir_not_exists('/tmp/missing')         # Assert dir doesn't exist
+     ->expect_file_contains('/path/file', 'pattern') # Assert file contains pattern
+     ->create_file('/tmp/test.txt', 'content');      # Create test file
+```
+
+### Command Execution DSL
+Command execution and testing methods:
+```perl
+$game->run_command('ls /sewer')                      # Execute shell command
+     ->expect_command_success('echo test')           # Assert command exits 0
+     ->expect_command_fails('ls /nonexistent');      # Assert command fails
+
+my $output = $game->get_command_output('cat /tmp/file'); # Capture stdout
+```
+
+### DM Tick Simulation
+Dungeon Master tick testing:
+```perl
+$game->trigger_dm_tick();  # Execute DM tick, reload player state
+```
+Note: DM uses `/home/soul.dat`, so tests must use that save path for DM quest checks.
 
 ### Automatic Enemy Creation
 Tests create appropriately-sized enemies:
