@@ -284,6 +284,48 @@ sub report {
 # Internal helpers
 # ================
 
+# XP Calculation Helpers
+# Calculate XP threshold for a specific level (matches Player.pm formula)
+# This is the XP needed AT that level to reach the NEXT level
+sub xp_for_level {
+    my ($self, $level) = @_;
+    my $fib = $self->_fibonacci($level + 2);
+    return $fib * 1000;
+}
+
+# Calculate total XP needed to reach target_level from current_level
+sub xp_to_reach_level {
+    my ($self, $from_level, $to_level) = @_;
+    my $total = 0;
+    for (my $lvl = $from_level; $lvl < $to_level; $lvl++) {
+        $total += $self->xp_for_level($lvl);
+    }
+    return $total;
+}
+
+# Add just enough XP to level up once from current level
+sub level_up_once {
+    my ($self) = @_;
+    my $current_level = $self->{player}{level};
+    my $current_xp = $self->{player}{xp};
+    my $threshold = $self->{player}->xp_for_next_level();
+    my $xp_needed = $threshold - $current_xp;
+    return $self->add_xp($xp_needed);
+}
+
+# Calculate nth fibonacci number
+sub _fibonacci {
+    my ($self, $n) = @_;
+    return 0 if $n == 0;
+    return 1 if $n == 1 || $n == 2;
+
+    my ($a, $b) = (1, 1);
+    for (my $i = 3; $i <= $n; $i++) {
+        ($a, $b) = ($b, $a + $b);
+    }
+    return $b;
+}
+
 sub log {
     my ($self, $msg) = @_;
 

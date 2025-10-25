@@ -28,23 +28,23 @@ $game->start_fresh()
      ->expect_cannot_use('grep -i');  # Definitely not
 
 # Level up to 1
-$game->add_xp(100)
+$game->level_up_once()
      ->expect_level(1)
      ->expect_can_use('ls -l')        # Now unlocked!
      ->expect_can_use('ls -a')        # Also unlocked
      ->expect_can_use('ls -l /home')  # Flag + filename OK
      ->expect_cannot_use('grep');     # Still locked
 
-# Level up to 6 (grep unlocked)
-$game->add_xp(1000)
-     ->expect_level(6)
+# Level up to 6 (grep unlocked) - level up 5 times
+for (1..5) { $game->level_up_once(); }
+$game->expect_level(6)
      ->expect_can_use('grep')         # Base grep OK
      ->expect_can_use('grep pattern file')  # With args OK
      ->expect_cannot_use('grep -i')   # Flag still locked
      ->expect_cannot_use('grep -n');
 
 # Level up to 7 (grep flags unlocked)
-$game->add_xp(500)
+$game->level_up_once()
      ->expect_level(7)
      ->expect_can_use('grep -i')      # Now unlocked
      ->expect_can_use('grep -n')      # Also unlocked

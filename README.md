@@ -431,7 +431,8 @@ my $base_damage = 20;  # Increase for easier combat
 
 Edit `docker/game-image/lib/ShellCraft/Player.pm`:
 ```perl
-return int(100 * (1.5 ** $self->{level}));  # XP curve
+my $fib = $self->_fibonacci($self->{level} + 2);
+return $fib * 1000;  # Fibonacci XP curve
 ```
 
 ---

@@ -194,14 +194,31 @@ sub is_dead {
 sub xp_for_next_level {
     my ($self) = @_;
 
-    # Formula: 100 * (1.5 ^ level)
-    # This gives reasonable progression:
-    # L0->L1: 100 XP
-    # L1->L2: 150 XP
-    # L2->L3: 225 XP
-    # L10->L11: 5766 XP
+    # Formula: fibonacci(level + 2) * 1000
+    # This gives natural progression that scales nicely:
+    # L0->L1: 1000 XP (fib(2) = 1)
+    # L1->L2: 2000 XP (fib(3) = 2)
+    # L2->L3: 3000 XP (fib(4) = 3)
+    # L3->L4: 5000 XP (fib(5) = 5)
+    # L4->L5: 8000 XP (fib(6) = 8)
+    # L5->L6: 13000 XP (fib(7) = 13)
+    # L10->L11: 144000 XP (fib(12) = 144)
 
-    return int(1000 * (2.0 ** $self->{level}));
+    my $fib = $self->_fibonacci($self->{level} + 2);
+    return $fib * 1000;
+}
+
+# Calculate nth fibonacci number
+sub _fibonacci {
+    my ($self, $n) = @_;
+    return 0 if $n == 0;
+    return 1 if $n == 1 || $n == 2;
+
+    my ($a, $b) = (1, 1);
+    for (my $i = 3; $i <= $n; $i++) {
+        ($a, $b) = ($b, $a + $b);
+    }
+    return $b;
 }
 
 1;

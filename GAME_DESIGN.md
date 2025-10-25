@@ -162,19 +162,23 @@ max_hp = 100 + (level * 20)
 
 ### 4.2 Level-Up Formula
 ```perl
-xp_needed = 100 * (1.5 ^ level)
+xp_needed = fibonacci(level + 2) * 1000
 ```
 
 **Thresholds:**
-- L0→L1: 100 XP (1 rat)
-- L1→L2: 150 XP (1 rat)
-- L2→L3: 225 XP (1-2 rats)
-- L5→L6: 759 XP (2-3 rats)
-- L10→L11: 5766 XP (~20+ rats)
+- L0→L1: 1000 XP (fib(2) = 1)
+- L1→L2: 2000 XP (fib(3) = 2)
+- L2→L3: 3000 XP (fib(4) = 3)
+- L3→L4: 5000 XP (fib(5) = 5)
+- L4→L5: 8000 XP (fib(6) = 8)
+- L5→L6: 13000 XP (fib(7) = 13)
+- L10→L11: 144000 XP (fib(12) = 144)
 
 **Design Rationale:**
-- **Exponential curve** - Early levels are quick; later levels take dedication
-- **Prevents level rushing** - Can't just spam rats to L20 quickly
+- **Fibonacci progression** - Natural scaling that feels balanced
+- **Early levels accessible** - First few levels are quick (1-3k XP)
+- **Later levels challenging** - Growth accelerates but remains achievable
+- **Prevents level rushing** - Can't trivially reach high levels
 - **Matches skill complexity** - Advanced commands (awk, sed) require more mastery
 
 ---

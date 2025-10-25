@@ -27,13 +27,14 @@ $game->start_fresh()
      ->expect_can_use('ls')
      ->expect_cannot_use('ls -l');
 
-# Fight a small rat (100 bytes)
+# Fight a small rat (100 bytes = 100 XP)
 # L0 player: 20 damage, rat does 12 damage
 # Expected: 5 turns, player takes 60 damage
+# NEW FORMULA: L0→L1 needs 1000 XP, so still L0 after one rat
 $game->fight('/tmp/test_rat.rat')
-     ->expect_level(1)           # 100 XP should level us up
-     ->expect_hp_at_least(100)   # HP restored on level up
-     ->expect_can_use('ls -l')   # Now have ls -l unlocked
+     ->expect_level(0)           # 100 XP is not enough (need 1000)
+     ->expect_hp_at_least(40)    # Should have taken damage but survive
+     ->expect_cannot_use('ls -l') # Still locked at L0
      ->save_or_die();
 
 # Report results

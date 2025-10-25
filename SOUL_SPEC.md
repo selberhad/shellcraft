@@ -48,10 +48,10 @@ The soul is a binary file that stores player state. The file size itself encodes
 - **Notes**: Level determines command unlocks and max HP
 
 ### XP (0x12-0x15)
-- **Type**: 32-bit unsigned integer, little-endian
-- **Range**: 0 to 2^32-1
+- **Type**: 64-bit unsigned integer, little-endian
+- **Range**: 0 to 2^64-1
 - **Purpose**: Current experience points
-- **Formula**: Next level requires `100 * (1.5 ^ level)` XP
+- **Formula**: Next level requires `fibonacci(level + 2) * 1000` XP
 
 ### Quest Slots (0x16-0x35)
 - **Type**: Array of 8 u32 LE integers

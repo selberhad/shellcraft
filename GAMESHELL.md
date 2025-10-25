@@ -40,9 +40,9 @@ By level 42, the player has mastered an entire set of essential UNIX tools.
 
 ### 3.3 Leveling
 
-- Player level determines all skill proficiencies.  
-- Level-up thresholds follow a non-linear curve to prevent exponential file sizes:  
-  XP for next level = `100 * (1.5 ^ level)`  
+- Player level determines all skill proficiencies.
+- Level-up thresholds follow a Fibonacci progression:
+  XP for next level = `fibonacci(level + 2) * 1000`
 - Damage and XP scaling are logarithmic to keep files small.
 
 ### 3.4 Combat System
