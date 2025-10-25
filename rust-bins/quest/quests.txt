@@ -1,0 +1,102 @@
+# Quest Data for ShellCraft
+# Simple key=value format, quests separated by %%
+# Multi-line values use triple quotes """..."""
+
+%% QUEST 1
+id=1
+name=The Sewer Cleanse
+min_level=0
+reward_xp=1000
+offer_title=The Sewer Cleanse
+offer_narrative="""
+A terrible stench rises from the sewers beneath the city.
+The rat infestation has grown out of control. Someone must
+venture into the darkness and clear them out.
+"""
+offer_objective=Eliminate all rats in /sewer
+offer_reward=1000 XP
+journal_description="""
+The sewers beneath the city are infested with rats.
+Venture into /sewer and eliminate every last one.
+"""
+progress_format={count} rats remaining
+completion_message=The Dungeon Master will grant your reward shortly.
+
+%% QUEST 2
+id=2
+name=The Crack
+min_level=2
+reward_xp=2000
+offer_title=The Crack
+offer_narrative="""
+You've mastered the basic commands. Now it's time to discover
+what lies hidden in the shadows. The sewers hold secrets that
+only reveal themselves to those who know where to look.
+"""
+offer_objective=Discover the hidden .crack/ directory in /sewer
+offer_reward=2000 XP
+journal_description="""
+Explore the hidden areas of the sewer.
+Use 'ls -a' in /sewer to reveal what's hidden.
+"""
+journal_objective=Discover the .crack/ directory
+journal_reward=2000 XP
+
+%% QUEST 3
+id=3
+name=The Locked Door
+min_level=3
+reward_xp=3000
+offer_title=The Locked Door
+offer_narrative="""
+Beyond the crack in the wall lies a locked door. Ancient
+mechanisms guard the passage deeper. You'll need to create
+the right tool to open it.
+"""
+offer_objective=Create a key and unlock the door in .crack/
+offer_reward=3000 XP
+journal_description="""
+A locked door blocks your path in /sewer/.crack/
+Find a way to unlock it.
+"""
+journal_objective=Create a key and unlock the door
+journal_reward=3000 XP
+
+%% QUEST 4
+id=4
+name=Portal Home
+min_level=5
+reward_xp=8000
+offer_title=Portal Home
+offer_narrative="""
+You've discovered Under-Nix, but the journey is long.
+Create a shortcut from your home directory using the
+power of symbolic links.
+"""
+offer_objective=Create a symlink from /home to under_nix
+offer_reward=8000 XP
+journal_description="""
+Create a symlink from /home to under_nix for quick access.
+"""
+journal_objective=ln -s /sewer/.crack/under_nix /home/portal
+journal_reward=8000 XP
+
+%% QUEST 5
+id=5
+name=Navigate the Maze
+min_level=6
+reward_xp=13000
+offer_title=Navigate the Maze
+offer_narrative="""
+Under-Nix is a twisted labyrinth of symbolic links.
+Somewhere within lies a treasure, but you'll need to
+see where the paths truly lead to find it.
+"""
+offer_objective=Find the treasure in the symlink maze
+offer_reward=13000 XP
+journal_description="""
+The symlink maze in under_nix hides a treasure.
+Use 'ls -l' to see where symlinks point.
+"""
+journal_objective=Find the treasure in the maze
+journal_reward=13000 XP

@@ -14,6 +14,22 @@
 
 ## Critical Rules
 
+### 0. NEVER Run `docker build` Directly
+
+**CRITICAL:** Always use the build script, never run `docker build` manually.
+
+```bash
+# ✅ CORRECT - Use the build script
+./build-game-image.sh
+
+# ❌ WRONG - Never do this
+docker build -t shellcraft/game:latest .
+docker build -f docker/game-image/Dockerfile .
+cd docker/game-image && docker build .
+```
+
+**Why:** The build script handles the correct build context from the project root. Running `docker build` from the wrong directory will fail because the Dockerfile COPYs paths relative to the project root.
+
 ### 1. Multi-Stage Docker Build (DO NOT BREAK)
 
 The `docker/game-image/Dockerfile` uses a **multi-stage build**:

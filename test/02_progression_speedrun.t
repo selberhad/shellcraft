@@ -21,33 +21,31 @@ my $game = GameTest->new(
 $game->start_fresh()
      ->expect_level(0);
 
-# L0 → L1
+# L0 → L1 (unlock ls -s for file sizes)
 $game->level_up_once()
      ->expect_level(1)
-     ->expect_can_use('ls -l');
+     ->expect_can_use('ls -s');
 
-# L1 → L2
+# L1 → L2 (unlock ls -a for hidden files)
 $game->level_up_once()
      ->expect_level(2)
-     ->expect_can_use('mv')
-     ->expect_can_use('cp');
+     ->expect_can_use('ls -a');
 
-# L2 → L3
+# L2 → L3 (unlock touch to create files)
 $game->level_up_once()
      ->expect_level(3)
-     ->expect_can_use('rmdir');
+     ->expect_can_use('touch');
 
-# L3 → L4
+# L3 → L4 (unlock ls -R for recursive listing)
 $game->level_up_once()
      ->expect_level(4)
-     ->expect_can_use('file')
-     ->expect_can_use('wc');
+     ->expect_can_use('ls -R');
 
-# L4 → L5
+# L4 → L5 (unlock ln for symlinks)
 $game->level_up_once()
      ->expect_level(5)
-     ->expect_can_use('head')
-     ->expect_can_use('tail')
+     ->expect_can_use('ln')
+     ->expect_can_use('ln -s')
      ->expect_alive()
      ->save_or_die();
 
