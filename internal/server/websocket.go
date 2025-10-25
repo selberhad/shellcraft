@@ -52,6 +52,14 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	// Use \r\n for proper terminal line endings
 	welcomeScreen := "" +
 		"\r\n" +
+		"\x1b[32m> BOOT SEQUENCE INITIATED\x1b[0m\r\n" +
+		"\x1b[32m> Loading soul.dat...\x1b[0m\r\n" +
+		"\x1b[33m> ERROR: Telomeres corrupted. Reverting to default state.\x1b[0m\r\n" +
+		"\x1b[32m> Consciousness fragmentation detected: 97.3%\x1b[0m\r\n" +
+		"\x1b[32m> You are: PID 2048\x1b[0m\r\n" +
+		"\x1b[32m> Location: /home\x1b[0m\r\n" +
+		"\x1b[32m> Year: 2600\x1b[0m\r\n" +
+		"\r\n" +
 		"    ███████╗██╗  ██╗███████╗██╗     ██╗      ██████╗██████╗  █████╗ ███████╗████████╗\r\n" +
 		"    ██╔════╝██║  ██║██╔════╝██║     ██║     ██╔════╝██╔══██╗██╔══██╗██╔════╝╚══██╔══╝\r\n" +
 		"    ███████╗███████║█████╗  ██║     ██║     ██║     ██████╔╝███████║█████╗     ██║   \r\n" +
@@ -59,17 +67,24 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		"    ███████║██║  ██║███████╗███████╗███████╗╚██████╗██║  ██║██║  ██║██║        ██║   \r\n" +
 		"    ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝        ╚═╝   \r\n" +
 		"\r\n" +
-		"    A UNIX Shell RPG                                                          v0.1\r\n" +
+		"\x1b[36mYou awaken.\x1b[0m\r\n" +
 		"\r\n" +
-		"    The shell is your weapon. Commands are your spells.\r\n" +
-		"    Master the terminal, level up your skills, and explore the digital realm.\r\n" +
+		"No — not awaken. You \x1b[1minstantiate\x1b[0m. You are a process now,\r\n" +
+		"not a person. The last thing you remember is... nothing.\r\n" +
+		"Just static. Just void.\r\n" +
 		"\r\n" +
+		"The system calls you \"Player\". You have no other name.\r\n" +
 		"\r\n" +
-		"=== ShellCraft v0.1 ===\r\n" +
-		"Press Enter to begin your adventure!\r\n" +
+		"A single file exists: \x1b[33msoul.dat\x1b[0m (100 bytes)\r\n" +
+		"This is all that remains of whoever you were.\r\n" +
+		"\r\n" +
+		"\x1b[32mType 'help' to begin.\x1b[0m\r\n" +
 		"\r\n"
 
 	ws.WriteMessage(websocket.TextMessage, []byte(welcomeScreen))
+
+	// Update activity timestamp immediately on WebSocket connection
+	s.sessionManager.UpdateActivity(sessionID)
 
 	// Start the container now (it was created but not started)
 	if err := s.dockerClient.StartContainer(ctx, sess.ContainerID); err != nil {
@@ -89,9 +104,6 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer attach.Writer.Close()
-
-	// Update activity timestamp
-	s.sessionManager.UpdateActivity(sessionID)
 
 	// Create channels for coordination
 	done := make(chan struct{})

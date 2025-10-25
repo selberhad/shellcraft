@@ -46,7 +46,6 @@ COPY --from=builder /build/rust-bins/target/release/quest /home/quest
 COPY docker/game-image/shellcraft.pl /usr/local/bin/shellcraft.pl
 COPY docker/game-image/dungeon-master.pl /usr/sbin/dungeon-master
 COPY docker/game-image/lib/ShellCraft/ /usr/local/lib/shellcraft/
-COPY docker/game-image/init/welcome.txt /etc/shellcraft/welcome.txt
 COPY docker/game-image/init/populate-world.sh /tmp/populate-world.sh
 
 # Make shell and binaries executable, populate world
