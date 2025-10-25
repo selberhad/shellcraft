@@ -37,6 +37,20 @@ pub fn load_quests() -> HashMap<u32, QuestData> {
             continue;
         }
 
+        // Skip the first line if it's just a quest number (e.g., " 1")
+        // This happens because split("%% QUEST") leaves " 1\nid=1\n..." after "%% QUEST 1"
+        let quest_block = if let Some(first_newline) = quest_block.find('\n') {
+            let first_line = &quest_block[..first_newline].trim();
+            // If first line is just a number, skip it
+            if first_line.chars().all(|c| c.is_ascii_digit() || c.is_whitespace()) {
+                &quest_block[first_newline + 1..]
+            } else {
+                quest_block
+            }
+        } else {
+            quest_block
+        };
+
         let mut quest = QuestData {
             id: 0,
             name: String::new(),
@@ -141,5 +155,47 @@ fn set_field(quest: &mut QuestData, key: &str, value: &str) {
         "progress_format" => quest.progress_format = Some(value.to_string()),
         "completion_message" => quest.completion_message = Some(value.to_string()),
         _ => {} // Ignore unknown fields
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_quest_1_loads() {
+        let quests = load_quests();
+
+        // Quest 1 should exist
+        let quest = quests.get(&1).expect("Quest 1 not found in quest data");
+
+        // Verify basic fields
+        assert_eq!(quest.id, 1);
+        assert_eq!(quest.name, "The Sewer Cleanse");
+        assert_eq!(quest.min_level, 0);
+        assert_eq!(quest.reward_xp, 1000);
+
+        // Verify offer fields
+        assert_eq!(quest.offer_title, "The Sewer Cleanse");
+        assert_eq!(quest.offer_objective, "Eliminate all rats in /sewer");
+        assert_eq!(quest.offer_reward, "1000 XP");
+        assert!(quest.offer_narrative.contains("garbage collection"));
+
+        // Verify journal fields
+        assert!(quest.journal_description.contains("garbage collector"));
+    }
+
+    #[test]
+    fn test_all_quests_load() {
+        let quests = load_quests();
+
+        // Should have quests 1-5
+        assert!(quests.contains_key(&1), "Quest 1 missing");
+        assert!(quests.contains_key(&2), "Quest 2 missing");
+        assert!(quests.contains_key(&3), "Quest 3 missing");
+        assert!(quests.contains_key(&4), "Quest 4 missing");
+        assert!(quests.contains_key(&5), "Quest 5 missing");
+
+        assert_eq!(quests.len(), 5, "Expected exactly 5 quests");
     }
 }
