@@ -41,6 +41,22 @@ sub is_unlocked {
     # Extract base command (before arguments/flags)
     my $base_cmd = (split /\s+/, $cmd)[0];
 
+    # Special case: Allow executables in player's home directory
+    # This includes relative paths (./command) and absolute paths to /home/
+    if ($base_cmd =~ m{^\.\/} || $base_cmd =~ m{^/home/}) {
+        # Check if file exists and is executable
+        if (-e $base_cmd && -x $base_cmd) {
+            # Check if file is owned by player
+            my @stat = stat($base_cmd);
+            my $file_uid = $stat[4];
+            my $player_uid = $<;  # Current effective UID
+
+            # Allow if owned by player
+            return 1 if $file_uid == $player_uid;
+        }
+        # Otherwise fall through to normal validation (will fail)
+    }
+
     # Normalize whitespace for comparison
     $cmd =~ s/\s+/ /g;
     $cmd =~ s/^\s+|\s+$//g;
