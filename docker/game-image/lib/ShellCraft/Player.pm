@@ -167,15 +167,22 @@ sub level_up {
     # Restore HP to new max on level up
     $self->{hp} = $self->max_hp();
 
+    # ANSI color codes
+    my $CYAN = "\e[36m";
+    my $GREEN = "\e[32m";
+    my $YELLOW = "\e[33m";
+    my $BOLD = "\e[1m";
+    my $RESET = "\e[0m";
+
     print "\n";
-    print "*** LEVEL UP! ***\n";
-    print "You are now level $self->{level}!\n";
-    print "HP restored to " . $self->{hp} . "!\n";
+    print "${BOLD}${YELLOW}*** LEVEL UP! ***${RESET}\n";
+    print "You are now ${BOLD}${YELLOW}level $self->{level}${RESET}!\n";
+    print "${GREEN}HP restored to $self->{hp}!${RESET}\n";
 
     # Show what was unlocked
     my $unlock = Commands::unlock_at_level($self->{level});
     if ($unlock) {
-        print "You have unlocked: $unlock\n";
+        print "${CYAN}You have unlocked: ${BOLD}$unlock${RESET}\n";
     }
 
     print "\n";

@@ -93,11 +93,24 @@ while (1) {
 sub print_player_stats {
     my ($player) = @_;
 
-    print "Welcome back, $player->{name}!\n";
-    print "Level $player->{level} | HP: $player->{hp}/" . $player->max_hp() . " | XP: $player->{xp}/" . $player->xp_for_next_level() . "\n";
+    # ANSI color codes
+    my $CYAN = "\e[36m";
+    my $GREEN = "\e[32m";
+    my $YELLOW = "\e[33m";
+    my $RED = "\e[31m";
+    my $BOLD = "\e[1m";
+    my $RESET = "\e[0m";
+
+    # Calculate HP percentage for color
+    my $max_hp = $player->max_hp();
+    my $hp_percent = $max_hp > 0 ? ($player->{hp} / $max_hp) : 0;
+    my $hp_color = $hp_percent < 0.3 ? $RED : ($hp_percent < 0.7 ? $YELLOW : $GREEN);
+
+    print "${BOLD}${CYAN}Welcome back, $player->{name}!${RESET}\n";
+    print "${BOLD}Level${RESET} ${YELLOW}$player->{level}${RESET} | ${BOLD}HP:${RESET} ${hp_color}$player->{hp}${RESET}/" . $player->max_hp() . " | ${BOLD}XP:${RESET} ${CYAN}$player->{xp}${RESET}/" . $player->xp_for_next_level() . "\n";
     print "\n";
-    print "Type 'help' for guidance, 'status' to view your progress.\n";
-    print "Type 'exit' to save and quit.\n";
+    print "Type ${GREEN}'help'${RESET} for guidance, ${GREEN}'status'${RESET} to view your progress.\n";
+    print "Type ${GREEN}'exit'${RESET} to save and quit.\n";
     print "\n";
 }
 
@@ -136,21 +149,34 @@ sub print_locked_message {
 sub show_status {
     my ($player) = @_;
 
+    # ANSI color codes
+    my $CYAN = "\e[36m";
+    my $GREEN = "\e[32m";
+    my $YELLOW = "\e[33m";
+    my $RED = "\e[31m";
+    my $BOLD = "\e[1m";
+    my $RESET = "\e[0m";
+
+    # Calculate HP percentage for color
+    my $max_hp = $player->max_hp();
+    my $hp_percent = $max_hp > 0 ? ($player->{hp} / $max_hp) : 0;
+    my $hp_color = $hp_percent < 0.3 ? $RED : ($hp_percent < 0.7 ? $YELLOW : $GREEN);
+
     print "\n";
-    print "=== Character Status ===\n";
-    print "Name:  $player->{name}\n";
-    print "Level: $player->{level}\n";
-    print "HP:    $player->{hp} / " . $player->max_hp() . "\n";
-    print "XP:    $player->{xp} / " . $player->xp_for_next_level() . "\n";
+    print "${BOLD}${CYAN}=== Character Status ===${RESET}\n";
+    print "${BOLD}Name:${RESET}  $player->{name}\n";
+    print "${BOLD}Level:${RESET} ${YELLOW}$player->{level}${RESET}\n";
+    print "${BOLD}HP:${RESET}    ${hp_color}$player->{hp}${RESET} / $max_hp\n";
+    print "${BOLD}XP:${RESET}    ${CYAN}$player->{xp}${RESET} / " . $player->xp_for_next_level() . "\n";
     print "\n";
 
     my @unlocked = Commands::get_unlocked_commands($player->{level});
-    print "Unlocked Commands (" . scalar(@unlocked) . "):\n";
+    print "${BOLD}Unlocked Commands${RESET} (${GREEN}" . scalar(@unlocked) . "${RESET}):\n";
 
     my $cols = 4;
     my $count = 0;
     for my $cmd (@unlocked) {
-        printf "  %-15s", $cmd;
+        printf "  ${GREEN}%-15s${RESET}", $cmd;
         $count++;
         print "\n" if $count % $cols == 0;
     }
@@ -162,8 +188,8 @@ sub show_status {
     my $next_unlock = Commands::unlock_at_level($next_level);
     if ($next_unlock) {
         my $xp_needed = $player->xp_for_next_level() - $player->{xp};
-        print "Next unlock at Level $next_level: $next_unlock\n";
-        print "XP needed: $xp_needed\n";
+        print "${BOLD}Next unlock${RESET} at ${YELLOW}Level $next_level${RESET}: ${CYAN}$next_unlock${RESET}\n";
+        print "XP needed: ${YELLOW}$xp_needed${RESET}\n";
     }
     print "\n";
 }
@@ -171,31 +197,39 @@ sub show_status {
 sub show_help {
     my ($player) = @_;
 
+    # ANSI color codes
+    my $CYAN = "\e[36m";
+    my $GREEN = "\e[32m";
+    my $YELLOW = "\e[33m";
+    my $RED = "\e[31m";
+    my $BOLD = "\e[1m";
+    my $RESET = "\e[0m";
+
     print "\n";
-    print "=== ShellCraft Help ===\n";
+    print "${BOLD}${CYAN}=== ShellCraft Help ===${RESET}\n";
     print "\n";
-    print "Built-in commands:\n";
-    print "  status - View your character stats and unlocked commands\n";
-    print "  help   - Show this help message\n";
-    print "  exit   - Save and quit the game\n";
+    print "${BOLD}${YELLOW}Built-in commands:${RESET}\n";
+    print "  ${GREEN}status${RESET} - View your character stats and unlocked commands\n";
+    print "  ${GREEN}help${RESET}   - Show this help message\n";
+    print "  ${GREEN}exit${RESET}   - Save and quit the game\n";
     print "\n";
-    print "Core mechanics:\n";
-    print "  - Execute commands to gain XP (bytes manipulated)\n";
-    print "  - Level up to unlock new commands and arguments\n";
-    print "  - Your HP is the size of /home/soul.dat (file size = health)\n";
-    print "  - Run /home/quest to view and accept quests\n";
+    print "${BOLD}${YELLOW}Core mechanics:${RESET}\n";
+    print "  ${CYAN}\u2022${RESET} Execute commands to gain ${CYAN}XP${RESET} (bytes manipulated)\n";
+    print "  ${CYAN}\u2022${RESET} Level up to unlock new commands and arguments\n";
+    print "  ${CYAN}\u2022${RESET} Your ${GREEN}HP${RESET} is the size of ${BOLD}/home/soul.dat${RESET} (file size = health)\n";
+    print "  ${CYAN}\u2022${RESET} Run ${BOLD}/home/quest${RESET} to view and accept quests\n";
     print "\n";
-    print "Combat (turn-based):\n";
-    print "  - Enemies are files (.rat, .elf, daemon files)\n";
-    print "  - Attack by running: rm <enemy_file>\n";
-    print "  - Each turn: you attack, enemy attacks back\n";
-    print "  - Deal damage based on your level (truncates enemy file)\n";
-    print "  - Enemy deals damage = their max HP / 10 (reduces your soul.dat)\n";
-    print "  - Victory: enemy file deleted, you gain XP\n";
-    print "  - Death: soul.dat deleted (permadeath!)\n";
+    print "${BOLD}${YELLOW}Combat (turn-based):${RESET}\n";
+    print "  ${CYAN}\u2022${RESET} Enemies are files (.rat, .elf, daemon files)\n";
+    print "  ${CYAN}\u2022${RESET} Attack by running: ${GREEN}rm <enemy_file>${RESET}\n";
+    print "  ${CYAN}\u2022${RESET} Each turn: you attack, enemy attacks back\n";
+    print "  ${CYAN}\u2022${RESET} Deal damage based on your level (truncates enemy file)\n";
+    print "  ${CYAN}\u2022${RESET} Enemy deals damage = their max HP / 10 (reduces your soul.dat)\n";
+    print "  ${CYAN}\u2022${RESET} ${GREEN}Victory${RESET}: enemy file deleted, you gain XP\n";
+    print "  ${CYAN}\u2022${RESET} ${RED}Death${RESET}: soul.dat deleted (${BOLD}permadeath!${RESET})\n";
     print "\n";
     print "Use standard UNIX commands to interact with the world.\n";
-    print "Your progress is saved in /home/soul.dat\n";
+    print "Your progress is saved in ${BOLD}/home/soul.dat${RESET}\n";
     print "\n";
 }
 
