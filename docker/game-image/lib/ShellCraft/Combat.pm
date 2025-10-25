@@ -46,7 +46,10 @@ sub handle_combat {
 
         if ($enemy_hp <= 0) {
             # Enemy defeated!
-            unlink $filepath;
+            my $deleted = unlink $filepath;
+            if (!$deleted) {
+                warn "WARNING: Failed to delete enemy file: $filepath (error: $!)\n";
+            }
             print "\n";
             print "*** $enemy_name has been vanquished! ***\n";
             print "+${enemy_max_hp} XP\n";
